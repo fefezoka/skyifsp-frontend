@@ -134,8 +134,6 @@ export const {
       ...whiteA,
       ...blackA,
 
-      'text-primary': '$slate12',
-      'text-secondary': '$slate11',
       shadowLight: 'hsl(206 22% 7% / 35%)',
       shadowDark: 'hsl(206 22% 7% / 20%)',
       bg1: 'rgb(30, 42, 56)',
@@ -154,7 +152,8 @@ export const {
       5: '16px',
       6: '18px',
       7: '20px',
-      8: '24px',
+      8: '32px',
+      9: '48px',
     },
     zIndices: {
       header: 9,
