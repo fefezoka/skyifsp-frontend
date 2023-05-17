@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useId } from 'react';
 import { Controller, Control } from 'react-hook-form';
 import ReactSelect from 'react-select';
 
@@ -25,6 +25,7 @@ export const Select = ({
           value={field.value}
           ref={field.ref}
           onChange={field.onChange}
+          instanceId={useId()}
           styles={{
             input: (baseStyles) => ({
               ...baseStyles,
