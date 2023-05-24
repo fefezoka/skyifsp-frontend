@@ -1,1 +1,1 @@
-export { AvailableFlight } from "./AvailableFlight";
+export { AvailableFlights } from "./AvailableFlights";

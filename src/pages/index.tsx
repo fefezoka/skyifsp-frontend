@@ -4,19 +4,30 @@ import {
   Flex,
   Select,
   Text,
-  Grid,
   Button,
   Heading,
   Popover,
   PopoverTrigger,
   PopoverContent,
 } from "@styles";
-import { AvailableFlight } from "@components";
+import { AvailableFlights } from "@components";
 import { Control, FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FiRefreshCw } from "react-icons/fi";
 import axios from "axios";
+import { GetStaticProps } from "next";
+
+/*export const getStaticProps: GetStaticProps = async () => {
+  const {data }= await axios.get('http://10.100.3.33:8080/flight')
+
+  console.log(data)
+  return {
+    props: {
+
+    }
+  }
+}*/
 
 const formSchema = z.object({
   ida: z
@@ -85,7 +96,7 @@ export default function Home() {
       <Box as={"form"} onSubmit={handleSubmit(handleSubmitForm)}>
         <Box css={{ ta: "center", mb: "$2" }}>
           <Heading size="4" variant={"blue"} gradient>
-            SKYNET IFSP
+            SKYIFSP
           </Heading>
         </Box>
         <Flex
@@ -205,6 +216,7 @@ export default function Home() {
           <Button type="submit">Buscar voos</Button>
         </Box>
       </Box>
+      <AvailableFlights />
       <Text as={"pre"}>{JSON.stringify(getValues(), null, 4)}</Text>
     </Box>
   );
