@@ -109,7 +109,7 @@ export default function Home() {
             </Flex>
             <Select
               control={control as unknown as Control<FieldValues>}
-              name={'outward'}
+              name={'origin'}
               placeholder={'De onde deseja sair?'}
               options={flightOptions.filter((option) => option !== watch('destination'))}
             />
@@ -118,7 +118,7 @@ export default function Home() {
             <Text>Local de chegada</Text>
             <Select
               control={control as unknown as Control<FieldValues>}
-              name={'outbound'}
+              name={'destination'}
               placeholder={'Onde deseja chegar?'}
               options={flightOptions.filter((option) => option !== watch('origin'))}
             />
