@@ -8,6 +8,7 @@ import {
   Heading,
   Popover,
   PopoverTrigger,
+  DatePicker,
   PopoverContent,
 } from '@styles';
 import { AvailableFlights } from '@components';
@@ -24,24 +25,30 @@ const flightOptions = [
   { value: 'CNF', label: 'Confins - Belo Horizonte' },
 ] as const;
 
-const formSchema = z.object({
-  origin: z.object({
-    value: z.string(),
-    label: z.string(),
-  }),
-  destination: z.object({
-    value: z.string(),
-    label: z.string(),
-  }),
-  outward: z.date(),
-  outbound: z.date().optional(),
-  roundTrip: z.object({
-    value: z.boolean(),
-    label: z.string(),
-  }),
-  adults: z.number().min(1).max(12).default(1),
-  kids: z.number().min(0).max(12).default(0),
-});
+const formSchema = z
+  .object({
+    origin: z.object({
+      value: z.string(),
+      label: z.string(),
+    }),
+    destination: z.object({
+      value: z.string(),
+      label: z.string(),
+    }),
+    outward: z.date(),
+    outbound: z.date().optional(),
+    roundTrip: z.object({
+      value: z.boolean(),
+      label: z.string(),
+    }),
+    adults: z.number().min(1).max(12),
+    kids: z.number().min(0).max(12),
+  })
+  .superRefine((data, ctx) => {
+    if (data.roundTrip.value && !data.outbound) {
+      ctx.addIssue({ code: 'invalid_date' });
+    }
+  });
 
 type FormData = z.infer<typeof formSchema>;
 
@@ -54,15 +61,21 @@ export default function Home() {
     watch,
     control,
     handleSubmit,
+    setFocus,
     formState: { errors },
   } = useForm<FormData>({ resolver: zodResolver(formSchema) });
 
   const handleSubmitForm = async (data: FormData) => {
+    console.log(data);
     try {
       const { data: flights } = await axios.get(
-        `/flights?outward=${data.outward.toISOString()}${
-          data.outbound ? '&outbound=' + data.outbound.toISOString() : ''
-        }&origin=${data.origin.value}${'&destination=' + data.destination.value}`
+        `/flights?outward=${data.outward.toISOString().split('T')[0]}&origin=${
+          data.origin.value
+        }&destination=${data.destination.value}${
+          data.roundTrip.value
+            ? '&outbound=' + data.outbound?.toISOString().split('T')[0]
+            : ''
+        }`
       );
       // console.log(flights);
       setFlights(flights);
@@ -127,18 +140,25 @@ export default function Home() {
         <Flex gap={'4'} css={{ '& > div': { flex: 1 } }} align={'center'}>
           <Box>
             <Text>Data de ida</Text>
-            <Input
-              type={'date'}
-              defaultValue={new Date().toISOString().split('T')[0]}
-              {...register('outward', { valueAsDate: true })}
+            <DatePicker
+              control={control as unknown as Control<FieldValues>}
+              name="outward"
+              selectsStart
+              defaultValue={new Date()}
+              onCalendarClose={() => setFocus('outbound')}
+              startDate={watch('outward')}
+              endDate={watch('outbound')}
             />
           </Box>
           <Box>
             <Text>Data de volta</Text>
-            <Input
-              disabled={watch('roundTrip.value') === false || false}
-              type={'date'}
-              {...register('outbound', { valueAsDate: true })}
+            <DatePicker
+              disabled={watch('roundTrip')?.value === false}
+              control={control as unknown as Control<FieldValues>}
+              name="outbound"
+              selectsEnd
+              startDate={watch('outward')}
+              endDate={watch('outbound')}
             />
           </Box>
           <Box>
@@ -188,7 +208,7 @@ export default function Home() {
                     defaultValue={1}
                     min={1}
                     max={8}
-                    {...register('adults', { valueAsNumber: true })}
+                    {...register('adults', { valueAsNumber: true, value: 1 })}
                   />
                 </Flex>
                 <Flex align={'center'} justify={'between'}>
@@ -201,7 +221,7 @@ export default function Home() {
                     defaultValue={0}
                     min={0}
                     max={8}
-                    {...register('kids', { valueAsNumber: true })}
+                    {...register('kids', { valueAsNumber: true, value: 0 })}
                   />
                 </Flex>
               </PopoverContent>

@@ -17,6 +17,11 @@ export const Input = styled('input', {
     fontSize: '$2',
   },
 
+  '&:disabled': {
+    bc: '$bg1',
+    color: '$slate11',
+  },
+
   variants: {
     radius: {
       '1': {

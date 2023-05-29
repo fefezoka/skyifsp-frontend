@@ -8,3 +8,4 @@ export { global } from './global';
 export { Button } from './Button';
 export { Heading } from './Heading';
 export { PopoverContent, Popover, PopoverClose, PopoverTrigger } from './Popover';
+export { DatePicker } from './DatePicker';

@@ -58,4 +58,16 @@ export const global = globalCss({
   '::-webkit-scrollbar-thumb': {
     backgroundColor: '$bg3',
   },
+
+  '.react-datepicker': {
+    fontSize: '.95em !important',
+  },
+
+  '.react-datepicker__month': {
+    margin: '.6em !important',
+  },
+
+  '.react-datepicker__day-name, .react-datepicker__day, .react-datepicker__time-name': {
+    width: '2.1em !important',
+  },
 });
