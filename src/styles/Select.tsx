@@ -25,7 +25,7 @@ export const Select = ({
           value={field.value}
           ref={field.ref}
           onChange={field.onChange}
-          instanceId={useId()}
+          instanceId={'selectbox'}
           styles={{
             input: (baseStyles) => ({
               ...baseStyles,

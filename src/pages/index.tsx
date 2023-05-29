@@ -9,60 +9,44 @@ import {
   Popover,
   PopoverTrigger,
   PopoverContent,
-} from "@styles";
-import { AvailableFlights } from "@components";
-import { Control, FieldValues, useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { FiRefreshCw } from "react-icons/fi";
-import axios from "axios";
-import { GetStaticProps } from "next";
+} from '@styles';
+import { AvailableFlights } from '@components';
+import { Control, FieldValues, useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { FiRefreshCw } from 'react-icons/fi';
+import axios from 'axios';
+import { useState } from 'react';
 
-/*export const getStaticProps: GetStaticProps = async () => {
-  const {data }= await axios.get('http://10.100.3.33:8080/flight')
-
-  console.log(data)
-  return {
-    props: {
-
-    }
-  }
-}*/
+const flightOptions = [
+  { value: 'CGH', label: 'Congonhas - São Paulo' },
+  { value: 'GIG', label: 'Galeão - Rio de Janeiro' },
+  { value: 'CNF', label: 'Confins - Belo Horizonte' },
+] as const;
 
 const formSchema = z.object({
-  ida: z
-    .object({
-      value: z.string(),
-      label: z.string(),
-    })
-    .transform((data) => data.value),
-  chegada: z
-    .object({
-      value: z.string(),
-      label: z.string(),
-    })
-    .transform((data) => data.value),
-  dataIda: z
-    .string()
-    .nonempty()
-    .transform((data) => new Date(data)),
-  dataVolta: z
-    .string()
-    .nonempty()
-    .transform((data) => new Date(data)),
-  trecho: z
-    .object({
-      value: z.string(),
-      label: z.string(),
-    })
-    .transform((data) => data.value),
-  clientesAdultos: z.coerce.number().min(1).max(12),
-  clientesCriancas: z.coerce.number().min(1).max(12),
+  outward: z.object({
+    value: z.string(),
+    label: z.string(),
+  }),
+  outbound: z.object({
+    value: z.string(),
+    label: z.string(),
+  }),
+  outwardDate: z.date(),
+  outboundDate: z.date().optional(),
+  roundTrip: z.object({
+    value: z.boolean(),
+    label: z.string(),
+  }),
+  adults: z.number().min(1).max(12).default(1),
+  kids: z.number().min(0).max(12).default(0),
 });
 
 type FormData = z.infer<typeof formSchema>;
 
 export default function Home() {
+  const [flights, setFlights] = useState<Flights>();
   const {
     register,
     setValue,
@@ -73,87 +57,102 @@ export default function Home() {
     formState: { errors },
   } = useForm<FormData>({ resolver: zodResolver(formSchema) });
 
-  const handleSubmitForm = (data: FormData) => {
-    console.log(data);
+  console.log(getValues());
+  console.log(watch('roundTrip'));
+
+  const handleSubmitForm = async (data: FormData) => {
+    try {
+      const { data: flights } = await axios.get(
+        `http://localhost:3001/flights?outward=${data.outwardDate.toISOString()}${
+          data.outboundDate ? '&outbound=' + data.outboundDate.toISOString() : ''
+        }&origin=${data.outward.value}${'&destination=' + data.outbound.value}`
+      );
+      console.log(flights);
+      setFlights(flights);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const invertLocals = () => {
-    const ida = getValues("ida");
-    setValue("ida", getValues("chegada"));
-    setValue("chegada", ida);
+    const outward = getValues('outward');
+    setValue('outward', getValues('outbound'));
+    setValue('outbound', outward);
   };
 
   return (
     <Box
-      as={"main"}
+      as={'main'}
       css={{
         maxWidth: 800,
-        m: "auto",
-        p: "$6 $4 $2 $4",
-        border: "2px solid $bg2",
+        m: 'auto',
+        p: '$6 $4',
+        border: '2px solid $bg2',
       }}
     >
-      <Box as={"form"} onSubmit={handleSubmit(handleSubmitForm)}>
-        <Box css={{ ta: "center", mb: "$2" }}>
-          <Heading size="4" variant={"blue"} gradient>
+      <Box
+        as={'form'}
+        onSubmit={handleSubmit(handleSubmitForm)}
+        css={{ '& span': { mb: 6 } }}
+      >
+        <Box css={{ ta: 'center', mb: '$2' }}>
+          <Heading size="4" variant={'blue'} gradient>
             SKYIFSP
           </Heading>
         </Box>
-        <Flex
-          align={"stretch"}
-          gap={"4"}
-          css={{ mb: "$3", "& > div": { flex: 1 } }}
-        >
+        <Flex align={'stretch'} gap={'4'} css={{ mb: '$4', '& > div': { flex: 1 } }}>
           <Box>
-            <Flex justify={"between"}>
-              <Text>Voo de ida</Text>
-              <FiRefreshCw onClick={invertLocals} />
+            <Flex justify={'between'}>
+              <Text>Local de ida</Text>
+              <FiRefreshCw
+                onClick={invertLocals}
+                size={14}
+                style={{ cursor: 'pointer' }}
+              />
             </Flex>
             <Select
               control={control as unknown as Control<FieldValues>}
-              name={"ida"}
-              placeholder={"De onde deseja sair?"}
-              options={[
-                { value: "SP-CG", label: "Congonhas - São Paulo" },
-                { value: "RJ-GA", label: "Galeão - Rio de Janeiro" },
-              ]}
+              name={'outward'}
+              placeholder={'De onde deseja sair?'}
+              options={flightOptions.filter((option) => option !== watch('outbound'))}
             />
           </Box>
           <Box>
-            <Text>Voo de chegada</Text>
+            <Text>Local de chegada</Text>
             <Select
               control={control as unknown as Control<FieldValues>}
-              name={"chegada"}
-              placeholder={"Onde deseja chegar?"}
-              options={[
-                { value: "SP-CG", label: "Congonhas - São Paulo" },
-                { value: "RJ-GA", label: "Galeão - Rio de Janeiro" },
-              ]}
+              name={'outbound'}
+              placeholder={'Onde deseja chegar?'}
+              options={flightOptions.filter((option) => option !== watch('outward'))}
             />
           </Box>
         </Flex>
-        <Flex gap={"4"} css={{ "& > div": { flex: 1 } }} align={"center"}>
+        <Flex gap={'4'} css={{ '& > div': { flex: 1 } }} align={'center'}>
           <Box>
             <Text>Data de ida</Text>
             <Input
-              type={"date"}
-              value={new Date().toISOString().split("T")[0]}
-              {...register("dataIda")}
+              type={'date'}
+              defaultValue={new Date().toISOString().split('T')[0]}
+              {...register('outwardDate', { valueAsDate: true })}
             />
           </Box>
           <Box>
             <Text>Data de volta</Text>
-            <Input type={"date"} {...register("dataVolta")} />
+            <Input
+              disabled={watch('roundTrip.value') === false || false}
+              type={'date'}
+              {...register('outboundDate', { valueAsDate: true })}
+            />
           </Box>
           <Box>
             <Text>Trecho</Text>
             <Select
               control={control as unknown as Control<FieldValues>}
-              name="trecho"
-              defaultValue={{ label: "Ida e volta", value: "ida-e-volta" }}
+              name="roundTrip"
+              defaultValue={{ label: 'Ida e volta', value: true }}
               options={[
-                { label: "Ida e volta", value: "ida-e-volta" },
-                { label: "Só ida ou volta", value: "ida" },
+                { label: 'Ida e volta', value: true },
+                { label: 'Só ida', value: false },
               ]}
             />
           </Box>
@@ -165,59 +164,58 @@ export default function Home() {
                 <Flex>
                   <Button
                     css={{
-                      bc: "$bg2",
-                      width: "100%",
-                      bs: "none",
-                      border: "1px solid $bg3",
-                      justifyContent: "start",
-                      "&:hover": {
-                        bc: "$bg2",
+                      bc: '$bg2',
+                      width: '100%',
+                      bs: 'none',
+                      border: '1px solid $bg3',
+                      justifyContent: 'start',
+                      fontWeight: 400,
+                      '&:hover': {
+                        bc: '$bg2',
                       },
                     }}
                   >
-                    {Number(watch("clientesAdultos")) +
-                      Number(watch("clientesCriancas"))}{" "}
+                    {Number(watch('adults') || 1) + Number(watch('kids') || 0)}{' '}
                     Passageiros
                   </Button>
                 </Flex>
               </PopoverTrigger>
               <PopoverContent>
-                <Flex align={"center"} justify={"between"} css={{ mb: "$3" }}>
-                  <Text size={"4"} weight={600}>
+                <Flex align={'center'} justify={'between'} css={{ mb: '$3' }}>
+                  <Text size={'4'} weight={600}>
                     Adultos
                   </Text>
                   <Input
                     css={{ width: 144 }}
-                    type={"number"}
+                    type={'number'}
                     defaultValue={1}
                     min={1}
                     max={8}
-                    {...register("clientesAdultos")}
+                    {...register('adults', { valueAsNumber: true })}
                   />
                 </Flex>
-                <Flex align={"center"} justify={"between"}>
-                  <Text size={"4"} weight={600}>
+                <Flex align={'center'} justify={'between'}>
+                  <Text size={'4'} weight={600}>
                     Crianças
                   </Text>
                   <Input
                     css={{ width: 144 }}
-                    type={"number"}
+                    type={'number'}
                     defaultValue={0}
                     min={0}
                     max={8}
-                    {...register("clientesCriancas")}
+                    {...register('kids', { valueAsNumber: true })}
                   />
                 </Flex>
               </PopoverContent>
             </Popover>
           </Box>
         </Flex>
-        <Box css={{ mt: "$4", ta: "right" }}>
+        <Box css={{ mt: '$4', ta: 'right' }}>
           <Button type="submit">Buscar voos</Button>
         </Box>
       </Box>
-      <AvailableFlights />
-      <Text as={"pre"}>{JSON.stringify(getValues(), null, 4)}</Text>
+      {flights && <AvailableFlights flights={flights} />}
     </Box>
   );
 }
