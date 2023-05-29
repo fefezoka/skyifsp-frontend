@@ -60,7 +60,7 @@ export default function Home() {
   const handleSubmitForm = async (data: FormData) => {
     try {
       const { data: flights } = await axios.get(
-        `http://localhost:3001/flights?outward=${data.outward.toISOString()}${
+        `/flights?outward=${data.outward.toISOString()}${
           data.outbound ? '&outbound=' + data.outbound.toISOString() : ''
         }&origin=${data.origin.value}${'&destination=' + data.destination.value}`
       );
