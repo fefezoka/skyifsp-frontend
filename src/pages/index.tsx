@@ -15,7 +15,7 @@ import { Control, FieldValues, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { FiRefreshCw } from 'react-icons/fi';
-import axios from 'axios';
+import axios from '../service/axios';
 import { useState } from 'react';
 
 const flightOptions = [
@@ -25,16 +25,16 @@ const flightOptions = [
 ] as const;
 
 const formSchema = z.object({
-  outward: z.object({
+  origin: z.object({
     value: z.string(),
     label: z.string(),
   }),
-  outbound: z.object({
+  destination: z.object({
     value: z.string(),
     label: z.string(),
   }),
-  outwardDate: z.date(),
-  outboundDate: z.date().optional(),
+  outward: z.date(),
+  outbound: z.date().optional(),
   roundTrip: z.object({
     value: z.boolean(),
     label: z.string(),
@@ -57,17 +57,14 @@ export default function Home() {
     formState: { errors },
   } = useForm<FormData>({ resolver: zodResolver(formSchema) });
 
-  console.log(getValues());
-  console.log(watch('roundTrip'));
-
   const handleSubmitForm = async (data: FormData) => {
     try {
       const { data: flights } = await axios.get(
-        `http://localhost:3001/flights?outward=${data.outwardDate.toISOString()}${
-          data.outboundDate ? '&outbound=' + data.outboundDate.toISOString() : ''
-        }&origin=${data.outward.value}${'&destination=' + data.outbound.value}`
+        `http://localhost:3001/flights?outward=${data.outward.toISOString()}${
+          data.outbound ? '&outbound=' + data.outbound.toISOString() : ''
+        }&origin=${data.origin.value}${'&destination=' + data.destination.value}`
       );
-      console.log(flights);
+      // console.log(flights);
       setFlights(flights);
     } catch (e) {
       console.log(e);
@@ -75,9 +72,9 @@ export default function Home() {
   };
 
   const invertLocals = () => {
-    const outward = getValues('outward');
-    setValue('outward', getValues('outbound'));
-    setValue('outbound', outward);
+    const origin = getValues('origin');
+    setValue('origin', getValues('destination'));
+    setValue('destination', origin);
   };
 
   return (
@@ -114,7 +111,7 @@ export default function Home() {
               control={control as unknown as Control<FieldValues>}
               name={'outward'}
               placeholder={'De onde deseja sair?'}
-              options={flightOptions.filter((option) => option !== watch('outbound'))}
+              options={flightOptions.filter((option) => option !== watch('destination'))}
             />
           </Box>
           <Box>
@@ -123,7 +120,7 @@ export default function Home() {
               control={control as unknown as Control<FieldValues>}
               name={'outbound'}
               placeholder={'Onde deseja chegar?'}
-              options={flightOptions.filter((option) => option !== watch('outward'))}
+              options={flightOptions.filter((option) => option !== watch('origin'))}
             />
           </Box>
         </Flex>
@@ -133,7 +130,7 @@ export default function Home() {
             <Input
               type={'date'}
               defaultValue={new Date().toISOString().split('T')[0]}
-              {...register('outwardDate', { valueAsDate: true })}
+              {...register('outward', { valueAsDate: true })}
             />
           </Box>
           <Box>
@@ -141,7 +138,7 @@ export default function Home() {
             <Input
               disabled={watch('roundTrip.value') === false || false}
               type={'date'}
-              {...register('outboundDate', { valueAsDate: true })}
+              {...register('outbound', { valueAsDate: true })}
             />
           </Box>
           <Box>
