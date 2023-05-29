@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL}`
+  baseURL: process.env.NEXT_PUBLIC_VERCEL_URL
+    ? `${process.env.NEXT_PUBLIC_VERCEL_URL}`
     : 'http://localhost:3001',
 });
 
