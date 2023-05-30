@@ -10,9 +10,10 @@ import {
   PopoverTrigger,
   DatePicker,
   PopoverContent,
+  Grid,
 } from '@styles';
 import { AvailableFlights } from '@components';
-import { Control, FieldValues, useForm } from 'react-hook-form';
+import { Control, Controller, FieldValues, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { FiRefreshCw } from 'react-icons/fi';
@@ -41,8 +42,8 @@ const formSchema = z
       value: z.boolean(),
       label: z.string(),
     }),
-    adults: z.number().min(1).max(12),
-    kids: z.number().min(0).max(12),
+    adults: z.number().min(1).max(8),
+    kids: z.number().min(0).max(8),
   })
   .superRefine((data, ctx) => {
     if (data.roundTrip.value && !data.outbound) {
@@ -69,7 +70,7 @@ export default function Home() {
     console.log(data);
     try {
       const { data: flights } = await axios.get(
-        `/flights?outward=${data.outward.toISOString().split('T')[0]}&origin=${
+        `/flights/search?outward=${data.outward.toISOString().split('T')[0]}&origin=${
           data.origin.value
         }&destination=${data.destination.value}${
           data.roundTrip.value
@@ -80,6 +81,7 @@ export default function Home() {
       // console.log(flights);
       setFlights(flights);
     } catch (e) {
+      setFlights(undefined);
       console.log(e);
     }
   };
@@ -94,10 +96,10 @@ export default function Home() {
     <Box
       as={'main'}
       css={{
-        maxWidth: 800,
+        p: '$4 $3',
+        maxWidth: 920,
         m: 'auto',
-        p: '$6 $4',
-        border: '2px solid $bg2',
+        '@bp2': { p: '$6 $4', border: '2px solid $bg2' },
       }}
     >
       <Box
@@ -110,7 +112,12 @@ export default function Home() {
             SKYIFSP
           </Heading>
         </Box>
-        <Flex align={'stretch'} gap={'4'} css={{ mb: '$4', '& > div': { flex: 1 } }}>
+        <Grid
+          columns={{ '@initial': '1', '@bp2': '2' }}
+          align={'stretch'}
+          gap={'4'}
+          css={{ mb: '$4' }}
+        >
           <Box>
             <Flex justify={'between'}>
               <Text>Local de ida</Text>
@@ -136,29 +143,50 @@ export default function Home() {
               options={flightOptions.filter((option) => option !== watch('origin'))}
             />
           </Box>
-        </Flex>
-        <Flex gap={'4'} css={{ '& > div': { flex: 1 } }} align={'center'}>
+        </Grid>
+        <Grid columns={{ '@initial': '1', '@bp2': '4' }} gap={'4'} align={'center'}>
           <Box>
             <Text>Data de ida</Text>
-            <DatePicker
-              control={control as unknown as Control<FieldValues>}
-              name="outward"
-              selectsStart
+            <Controller
+              control={control}
+              name={'outward'}
               defaultValue={new Date()}
-              onCalendarClose={() => setFocus('outbound')}
-              startDate={watch('outward')}
-              endDate={watch('outbound')}
+              render={({ field }) => (
+                <DatePicker
+                  onChange={(date) => {
+                    const outbound = watch('outbound');
+                    outbound &&
+                      (date as Date).getTime() > outbound.getTime() &&
+                      setValue('outbound', undefined);
+
+                    return field.onChange(date);
+                  }}
+                  selected={field.value}
+                  selectsStart
+                  onCalendarClose={() => setFocus('outbound')}
+                  startDate={watch('outward')}
+                  endDate={watch('outbound')}
+                  monthsShown={3}
+                />
+              )}
             />
           </Box>
           <Box>
             <Text>Data de volta</Text>
-            <DatePicker
-              disabled={watch('roundTrip')?.value === false}
-              control={control as unknown as Control<FieldValues>}
-              name="outbound"
-              selectsEnd
-              startDate={watch('outward')}
-              endDate={watch('outbound')}
+            <Controller
+              control={control}
+              name={'outbound'}
+              render={({ field }) => (
+                <DatePicker
+                  onChange={(date) => field.onChange(date)}
+                  selected={field.value}
+                  disabled={watch('roundTrip')?.value === false}
+                  selectsEnd
+                  startDate={watch('outward')}
+                  endDate={watch('outbound')}
+                  monthsShown={3}
+                />
+              )}
             />
           </Box>
           <Box>
@@ -227,7 +255,7 @@ export default function Home() {
               </PopoverContent>
             </Popover>
           </Box>
-        </Flex>
+        </Grid>
         <Box css={{ mt: '$4', ta: 'right' }}>
           <Button type="submit">Buscar voos</Button>
         </Box>

@@ -59,12 +59,16 @@ export const Select = ({
               ...baseStyles,
               backgroundColor: 'var(--colors-bg2)',
             }),
-            option: (baseStyles) => ({
+            option: (baseStyles, state) => ({
               ...baseStyles,
-              backgroundColor: 'var(--colors-bg2)',
+              backgroundColor: state.isSelected
+                ? 'var(--colors-blue9)'
+                : 'var(--colors-bg2)',
 
               ':hover': {
-                backgroundColor: 'var(--colors-bg3)',
+                backgroundColor: state.isSelected
+                  ? 'var(--colors-blue9)'
+                  : 'var(--colors-bg3)',
               },
             }),
           }}
