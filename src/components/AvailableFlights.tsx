@@ -1,4 +1,5 @@
 import { Box, Flex, Grid, Heading, Text } from '@styles';
+import Image from 'next/image';
 import { IoMdAirplane } from 'react-icons/io';
 
 export const AvailableFlights = ({ flights }: { flights: Flights }) => {
@@ -25,28 +26,38 @@ export const AvailableFlights = ({ flights }: { flights: Flights }) => {
                   )}
                 </Text>
               </Box>
-              <Grid columns={'3'} css={{ my: '$3', '& span': { pt: '$1' } }}>
-                <Box>
-                  <Text weight={600} size={'5'}>
-                    {flights.origin.city} - {flights.origin.state}
-                  </Text>
-                  <Flex align={'center'} justify={'center'} gap={'1'} css={{ mt: '$1' }}>
-                    <IoMdAirplane size={18} />
-                    <Text>{flights.origin.airport + ' - ' + flights.origin.code}</Text>
-                  </Flex>
-                </Box>
-                <Box />
-                <Box>
-                  <Text weight={600} size={'5'}>
-                    {flights.destination.city} - {flights.origin.state}
-                  </Text>
-                  <Flex align={'center'} justify={'center'} gap={'1'} css={{ mt: '$1' }}>
-                    <IoMdAirplane size={18} />
-                    <Text>
-                      {flights.destination.airport + ' - ' + flights.destination.code}
-                    </Text>
-                  </Flex>
-                </Box>
+              <Grid columns={'3'} css={{ my: '$2', '& span': { pt: '$1' }, us: 'none' }}>
+                {Object.values({
+                  origin: flights.origin,
+                  destination: flights.destination,
+                })
+                  .sort(() => (index === 0 ? 1 : -1))
+                  .map((airport, index) => (
+                    <>
+                      <Box>
+                        <Image
+                          width={36}
+                          height={27}
+                          alt=""
+                          draggable={false}
+                          src={`https://flagicons.lipis.dev/flags/4x3/${airport.countryCode.toLowerCase()}.svg`}
+                        />
+                        <Text weight={600} size={'5'}>
+                          {`${airport.city} - ${airport.countryCode}`}
+                        </Text>
+                        <Flex
+                          align={'center'}
+                          justify={'center'}
+                          gap={'1'}
+                          css={{ mt: '$1' }}
+                        >
+                          <IoMdAirplane size={18} />
+                          <Text>{airport.airport + ' - ' + airport.code}</Text>
+                        </Flex>
+                      </Box>
+                      <Box />
+                    </>
+                  ))}
               </Grid>
               <Box css={{ ta: 'center' }}>
                 {route.flights.map((flight, index) => (
@@ -56,7 +67,8 @@ export const AvailableFlights = ({ flights }: { flights: Flights }) => {
                     key={index}
                     css={{
                       ta: 'center',
-                      height: 72,
+                      height: 68,
+                      mb: '$2',
                       br: '$2',
                       bc: '$bg3',
                       transition: 'all 100ms ease-in',
@@ -72,20 +84,32 @@ export const AvailableFlights = ({ flights }: { flights: Flights }) => {
                         }).format(new Date(flight.departureDate))}
                       </Text>
                     </Box>
-                    <Box>
-                      <Text size={'5'}>Duração</Text>
-                      <Text size={'5'} css={{ mt: '$1' }}>
-                        {new Intl.DateTimeFormat('pt-br', {
-                          hour: 'numeric',
-                          minute: 'numeric',
-                          timeZone: 'UTC',
-                        }).format(
-                          new Date(flight.arrivalDate).getTime() -
-                            new Date(flight.departureDate).getTime()
-                        )}
-                        h
-                      </Text>
-                    </Box>
+                    <Flex align={'center'} justify={'center'} gap={'3'}>
+                      <Box>
+                        <Text size={'5'} weight={600}>
+                          Duração
+                        </Text>
+                        <Text size={'5'} css={{ mt: '$1' }}>
+                          {new Intl.DateTimeFormat('pt-br', {
+                            hour: 'numeric',
+                            minute: 'numeric',
+                            timeZone: 'UTC',
+                          }).format(
+                            new Date(flight.arrivalDate).getTime() -
+                              new Date(flight.departureDate).getTime()
+                          )}
+                          h
+                        </Text>
+                      </Box>
+                      <Box>
+                        <Text size={'5'} weight={600}>
+                          Preço por adulto
+                        </Text>
+                        <Text size={'5'} css={{ mt: '$1' }}>
+                          BRL {flight.price}
+                        </Text>
+                      </Box>
+                    </Flex>
                     <Box>
                       <Text size={'5'}>
                         {new Intl.DateTimeFormat('pt-br', {

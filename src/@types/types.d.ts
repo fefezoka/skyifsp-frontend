@@ -7,6 +7,7 @@ interface Flight {
     };
     departureDate: Date;
     arrivalDate: Date;
+    price: number;
   }[];
 }
 
@@ -19,7 +20,7 @@ interface Flights {
 
 interface Airport {
   country: string;
-  state: string;
+  countryCode: string;
   city: string;
   code: string;
   airport: string;

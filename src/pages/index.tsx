@@ -19,12 +19,31 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { FiRefreshCw } from 'react-icons/fi';
 import axios from '../service/axios';
 import { useState } from 'react';
+import { GetStaticProps } from 'next';
 
-const flightOptions = [
-  { value: 'CGH', label: 'Congonhas - São Paulo' },
-  { value: 'GIG', label: 'Galeão - Rio de Janeiro' },
-  { value: 'CNF', label: 'Confins - Belo Horizonte' },
-] as const;
+export const getStaticProps: GetStaticProps = async () => {
+  const { data } = await axios.get<Airport[]>('http://localhost:3001/airports');
+
+  const airports = data.map((airport) => {
+    return {
+      value: airport.code,
+      label:
+        airport.city +
+        ' ' +
+        airport.countryCode +
+        ' - ' +
+        airport.airport +
+        ' ' +
+        airport.code,
+    };
+  });
+
+  return {
+    props: {
+      airports,
+    },
+  };
+};
 
 const formSchema = z
   .object({
@@ -53,18 +72,14 @@ const formSchema = z
 
 type FormData = z.infer<typeof formSchema>;
 
-export default function Home() {
+export default function Home({
+  airports,
+}: {
+  airports: { value: string; label: string }[];
+}) {
   const [flights, setFlights] = useState<Flights>();
-  const {
-    register,
-    setValue,
-    getValues,
-    watch,
-    control,
-    handleSubmit,
-    setFocus,
-    formState: { errors },
-  } = useForm<FormData>({ resolver: zodResolver(formSchema) });
+  const { register, setValue, getValues, watch, control, handleSubmit, setFocus } =
+    useForm<FormData>({ resolver: zodResolver(formSchema) });
 
   const handleSubmitForm = async (data: FormData) => {
     console.log(data);
@@ -131,7 +146,9 @@ export default function Home() {
               control={control as unknown as Control<FieldValues>}
               name={'origin'}
               placeholder={'De onde deseja sair?'}
-              options={flightOptions.filter((option) => option !== watch('destination'))}
+              options={airports.filter(
+                (option) => option.value !== watch('destination')?.value
+              )}
             />
           </Box>
           <Box>
@@ -140,7 +157,9 @@ export default function Home() {
               control={control as unknown as Control<FieldValues>}
               name={'destination'}
               placeholder={'Onde deseja chegar?'}
-              options={flightOptions.filter((option) => option !== watch('origin'))}
+              options={airports.filter(
+                (option) => option.value !== watch('origin')?.value
+              )}
             />
           </Box>
         </Grid>
