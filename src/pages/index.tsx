@@ -22,7 +22,7 @@ import { useState } from 'react';
 import { GetStaticProps } from 'next';
 
 export const getStaticProps: GetStaticProps = async () => {
-  const { data } = await axios.get<Airport[]>('http://localhost:3001/airports');
+  const { data } = await axios.get<Airport[]>('https://skyifsp-backend.vercel.app/airports');
 
   const airports = data.map((airport) => {
     return {
