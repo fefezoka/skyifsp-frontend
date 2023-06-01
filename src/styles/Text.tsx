@@ -5,7 +5,6 @@ export const Text = styled('span', {
   margin: '0',
   fontWeight: 400,
   fontVariantNumeric: 'tabular-nums',
-  display: 'block',
 
   variants: {
     size: {

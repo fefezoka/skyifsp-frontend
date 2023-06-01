@@ -8,7 +8,7 @@ export const Input = styled('input', {
   fontSize: '$3',
   bc: '$bg2',
   color: '$slate12',
-  minHeight: 40,
+  minHeight: 44,
   boxShadow: 'inset 0 0 0 1px $colors$bg3',
 
   '&::placeholder': {

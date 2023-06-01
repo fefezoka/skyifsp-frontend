@@ -17,9 +17,7 @@ const StyledButton = styled('button', {
   jc: 'center',
   flexShrink: 0,
   cursor: 'pointer',
-
-  color: '$text-primary',
-  fontWeight: 500,
+  fontWeight: 600,
   transition: 'background-color 200ms, border-bottom-color 300ms ease-out',
   letterSpacing: '-.022em',
 
@@ -28,7 +26,7 @@ const StyledButton = styled('button', {
       1: {
         br: '$1',
         minWidth: 52,
-        px: '$2',
+        px: '$3',
         fontSize: '$1',
         height: '$7',
       },
@@ -36,11 +34,19 @@ const StyledButton = styled('button', {
         br: '$2',
         minWidth: 80,
         fontSize: '$3',
-        px: '$3',
-        height: '$8',
+        px: '$4',
+        height: 44,
       },
     },
     variant: {
+      gray: {
+        bc: '$bg2',
+        boxShadow: 'inset 0 0 0 1px $colors$bg3',
+
+        '&:hover': {
+          bc: '$bg2',
+        },
+      },
       red: {
         bc: '$red10',
         boxShadow: 'inset 0 0 0 1px $colors$red8',

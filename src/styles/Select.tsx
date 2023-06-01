@@ -1,4 +1,4 @@
-import React, { useId } from 'react';
+import React from 'react';
 import { Controller, Control } from 'react-hook-form';
 import ReactSelect from 'react-select';
 
@@ -29,7 +29,7 @@ export const Select = ({
           styles={{
             input: (baseStyles) => ({
               ...baseStyles,
-              minHeight: '32px',
+              minHeight: '36px',
             }),
             placeholder: (baseStyles) => ({
               ...baseStyles,
@@ -49,7 +49,7 @@ export const Select = ({
               backgroundColor: 'var(--colors-bg2)',
               boxShadow: 'inset 0 0 0 1px var(--colors-bg3)',
               border: 0,
-              borderRadius: '4px',
+              borderRadius: '8px',
             }),
             container: (baseStyles) => ({
               ...baseStyles,
@@ -66,9 +66,7 @@ export const Select = ({
                 : 'var(--colors-bg2)',
 
               ':hover': {
-                backgroundColor: state.isSelected
-                  ? 'var(--colors-blue9)'
-                  : 'var(--colors-bg3)',
+                backgroundColor: 'var(--colors-blue9)',
               },
             }),
           }}
