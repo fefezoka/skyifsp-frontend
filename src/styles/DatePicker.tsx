@@ -12,7 +12,7 @@ export const DatePicker = (props: React.ComponentProps<typeof PrimitiveDatePicke
       minDate={new Date()}
       placeholderText="Selecionar data"
       dateFormat={'dd/MM/yyyy'}
-      customInput={<Input />}
+      customInput={<Input css={{br: 0, }} />}
       {...props}
     />
   );

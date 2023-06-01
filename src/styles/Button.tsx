@@ -68,14 +68,13 @@ const StyledButton = styled('button', {
       true: {
         br: 0,
         bc: 'transparent',
-        borderBottom: '2px solid transparent',
+        borderBottom: '2px solid $bg3',
         px: '$4',
         color: '$text-secondary',
         boxShadow: 'none',
 
         '&:hover': {
           bc: 'transparent',
-          borderBottomColor: '$gray6',
         },
       },
     },
