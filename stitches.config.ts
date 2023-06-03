@@ -94,8 +94,10 @@ export const {
       5: '16px',
       6: '18px',
       7: '20px',
-      8: '44px',
-      9: '58px',
+      8: '28px',
+      9: '36px',
+      10: '44px',
+      11: '58px',
     },
     zIndices: {
       header: 9,

@@ -38,6 +38,17 @@ export const global = globalCss({
     listStyle: 'none',
   },
 
+  'table, th, td': {
+    borderCollapse: 'collapse',
+    whiteSpace: 'nowrap',
+  },
+
+  table: {
+    borderTopLeftRadius: '$3',
+    borderTopRightRadius: '$3',
+    overflow: 'hidden',
+  },
+
   input: {
     border: 'none',
     colorScheme: 'dark',

@@ -43,6 +43,16 @@ export const Text = styled('span', {
         letterSpacing: '-.030em',
         textIndent: '-.018em',
       },
+      '10': {
+        fontSize: '$10',
+        letterSpacing: '-.033em',
+        textIndent: '-.020em',
+      },
+      '11': {
+        fontSize: '$11',
+        letterSpacing: '-.036em',
+        textIndent: '-.022em',
+      },
     },
     gradient: {
       true: {

@@ -1,21 +1,29 @@
-interface Flight {
+interface Route {
   type: 'outward' | 'outbound';
-  flights: {
-    airplane: {
-      seats: number;
-      plane: string;
-    };
-    departureDate: Date;
-    arrivalDate: Date;
-    price: number;
-  }[];
+  flights: Flight[];
+}
+
+interface Flight {
+  id: string;
+  airplane: {
+    seats: number;
+    plane: string;
+  };
+  departureDate: Date;
+  arrivalDate: Date;
+  priceDetails: {
+    pricePerAdult: number;
+    pricePerKid: number;
+    total: number;
+    items: { message: string; amount: number }[];
+  };
 }
 
 interface Flights {
   price: string;
   origin: Airport;
   destination: Airport;
-  routes: Flight[];
+  routes: Route[];
 }
 
 interface Airport {

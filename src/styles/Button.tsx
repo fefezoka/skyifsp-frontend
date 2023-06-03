@@ -24,14 +24,14 @@ const StyledButton = styled('button', {
   variants: {
     size: {
       1: {
-        br: '$1',
+        br: '$2',
         minWidth: 52,
         px: '$3',
         fontSize: '$1',
         height: '$7',
       },
       2: {
-        br: '$2',
+        br: '$3',
         minWidth: 80,
         fontSize: '$3',
         px: '$4',
@@ -66,11 +66,11 @@ const StyledButton = styled('button', {
     },
     ghost: {
       true: {
+        fontWeight: 400,
         br: 0,
         bc: 'transparent',
         borderBottom: '2px solid $bg3',
         px: '$4',
-        color: '$text-secondary',
         boxShadow: 'none',
 
         '&:hover': {

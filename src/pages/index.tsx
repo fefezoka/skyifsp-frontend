@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { GetStaticProps } from 'next';
-import { Control, Controller, FieldValues, useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { IoIosArrowDown } from 'react-icons/io'
+import { IoIosArrowDown } from 'react-icons/io';
+import { MdTripOrigin, MdLocationOn, MdCalendarMonth } from 'react-icons/md';
 import axios from '../service/axios';
-import {format} from 'date-fns'
+import { format, addDays } from 'date-fns';
 import {
   Input,
   Box,
@@ -20,7 +21,7 @@ import {
   PopoverContent,
   Grid,
 } from '@styles';
-import { AvailableFlights } from '@components';
+import { AvailableFlights, FlightsExamples } from '@components';
 
 export const getStaticProps: GetStaticProps = async () => {
   const { data } = await axios.get<Airport[]>(
@@ -65,7 +66,7 @@ const formSchema = z
   })
   .superRefine((data, ctx) => {
     if (data.roundTrip && !data.dates[1]) {
-      ctx.addIssue({ code: 'invalid_date' });
+      ctx.addIssue({ code: 'invalid_date', path: ['dates'] });
     }
   });
 
@@ -77,20 +78,27 @@ export default function Home({
   airports: { value: string; label: string }[];
 }) {
   const [flights, setFlights] = useState<Flights>();
-  const { register, setValue, getValues, watch, control, handleSubmit, setFocus } =
-    useForm<FormData>({ resolver: zodResolver(formSchema) });
+  const {
+    register,
+    getValues,
+    watch,
+    control,
+    setValue,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormData>({
+    resolver: zodResolver(formSchema),
+  });
 
   const handleSubmitForm = async (data: FormData) => {
     console.log(data);
     try {
       const { data: flights } = await axios.get(
-        `/flights/search?outward=${data.dates[0].toISOString().split('T')[0]}&origin=${
+        `/flights/search?outward=${format(data.dates[0], 'yyyy-MM-dd')}&origin=${
           data.origin.value
         }&destination=${data.destination.value}${
-          data.roundTrip
-            ? '&outbound=' + data.dates[1]?.toISOString().split('T')[0]
-            : ''
-        }`
+          data.roundTrip ? '&outbound=' + format(data.dates[1], 'yyyy-MM-dd') : ''
+        }&adults=${data.adults}${data.kids > 0 ? '&kids=' + data.kids : ''}`
       );
       // console.log(flights);
       setFlights(flights);
@@ -98,12 +106,6 @@ export default function Home({
       setFlights(undefined);
       console.log(e);
     }
-  };
-
-  const invertLocals = () => {
-    const origin = getValues('origin');
-    setValue('origin', getValues('destination'));
-    setValue('destination', origin);
   };
 
   return (
@@ -118,10 +120,13 @@ export default function Home({
             p: '$6',
           }}
         >
-          <Box css={{ ta: 'center', mb: '$3' }}>
-            <Heading size="4" variant={'blue'} gradient>
+          <Box css={{ ta: 'center', mb: '$3', position: 'relative' }}>
+            <Heading size="6" variant={'blue'} gradient>
               SKYIFSP
             </Heading>
+            <Box css={{ position: 'absolute', top: 16, right: 0 }}>
+              <FlightsExamples />
+            </Box>
           </Box>
           <Grid
             columns={{ '@initial': '1', '@bp2': '3' }}
@@ -130,94 +135,149 @@ export default function Home({
             css={{ mb: '$4' }}
           >
             <Box>
-              <Text>Local de ida</Text>
-              {/* <FiRefreshCw
-                onClick={invertLocals}
-                size={14}
-                style={{ cursor: 'pointer' }}
-              /> */}
-              <Select
-                control={control as unknown as Control<FieldValues>}
+              <Flex css={{ mb: '$1' }} justify={'between'}>
+                <Flex gap={'1'}>
+                  <MdTripOrigin size={14} />
+                  <Text>Local de ida</Text>
+                </Flex>
+                {errors.origin && <Text variant={'red'}>* Obrigatório</Text>}
+              </Flex>
+              <Controller
+                control={control}
                 name={'origin'}
-                placeholder={'De onde deseja sair?'}
-                options={airports.filter(
-                  (option) => option.value !== watch('destination')?.value
+                render={({ field }) => (
+                  <Select
+                    placeholder={'De onde deseja sair?'}
+                    options={airports}
+                    value={field.value}
+                    onChange={(e) => {
+                      if (
+                        (e as { label: string; value: string }).value ===
+                        watch('destination')?.value
+                      ) {
+                        setValue('destination', getValues('origin'));
+                      }
+                      field.onChange(e);
+                    }}
+                  />
                 )}
               />
             </Box>
             <Box>
-              <Text>Local de chegada</Text>
-              <Select
-                control={control as unknown as Control<FieldValues>}
+              <Flex css={{ mb: '$1' }} justify={'between'}>
+                <Flex gap={'1'}>
+                  <MdLocationOn size={14} />
+                  <Text>Local de chegada</Text>
+                </Flex>
+                {errors.destination && <Text variant={'red'}>* Obrigatório</Text>}
+              </Flex>
+              <Controller
+                control={control}
                 name={'destination'}
-                placeholder={'Onde deseja chegar?'}
-                options={airports.filter(
-                  (option) => option.value !== watch('origin')?.value
+                render={({ field }) => (
+                  <Select
+                    placeholder={'Onde deseja chegar?'}
+                    options={airports.filter(
+                      (option) => option.value !== watch('origin')?.value
+                    )}
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
                 )}
               />
             </Box>
             <Box>
-              <Text>Data de ida</Text>
-              <Flex css={{br: '$2', overflow: 'hidden'}}>
-                <Controller
-                  control={control}
-                  name={'dates'}
-                  defaultValue={[new Date()]}
-                  render={({ field }) => (
-                    <DatePicker
-                      onChange={(date) => {
-                        const outbound = watch('dates')[1];
-                        outbound &&
-                          (date as [Date, Date])[0].getTime() > outbound.getTime() &&
-                          setValue('dates', [getValues('dates')[0]]);
-                        return field.onChange(date);
-                      }}
-                      selectsRange
-                      value={format(watch('dates')?.[0].getTime() || new Date(), 'dd/MM/yyyy')}
-                      startDate={watch('dates')?.[0]}
-                      endDate={watch('dates')?.[1]}
-                      monthsShown={3}
-                    />
-                  )}
-                />
+              <Flex css={{ mb: '$1' }} justify={'between'}>
+                <Flex gap={'1'}>
+                  <MdCalendarMonth size={14} />
+                  <Text>Datas</Text>
+                </Flex>
+                {errors.dates && <Text variant={'red'}>* Obrigatório</Text>}
+              </Flex>
+              <Flex css={{ br: '$2', overflow: 'hidden' }}>
                 <Controller
                   control={control}
                   name={'dates'}
                   render={({ field }) => (
                     <DatePicker
-                      onChange={(date) => {
-                        return field.onChange([getValues('dates')[0], date]);
-                      }}
-                      selectsEnd
-                      selected={watch('dates')?.[1]}
+                      placeholderText="Data de ida"
+                      onChange={(date) =>
+                        field.onChange(Array.isArray(date) ? date : [date])
+                      }
+                      selectsRange={!(watch('roundTrip') === false)}
+                      value={format(
+                        watch('dates')?.[0].getTime() || new Date(),
+                        'dd/MM/yyyy'
+                      )}
+                      selected={watch('dates')?.[0]}
                       startDate={watch('dates')?.[0]}
-                      endDate={watch('dates')?.[1]}
+                      endDate={watch('roundTrip') ? watch('dates')?.[1] : undefined}
                       monthsShown={3}
                     />
                   )}
                 />
+                {!(watch('roundTrip') === false) && (
+                  <Controller
+                    control={control}
+                    name={'dates'}
+                    render={({ field }) => (
+                      <DatePicker
+                        placeholderText={'Data de volta'}
+                        onChange={(date) => {
+                          return field.onChange([getValues('dates')[0], date]);
+                        }}
+                        selectsEnd
+                        selected={watch('dates')?.[1]}
+                        startDate={watch('dates')?.[0]}
+                        endDate={watch('dates')?.[1]}
+                        monthsShown={3}
+                      />
+                    )}
+                  />
+                )}
               </Flex>
             </Box>
           </Grid>
-          <Flex gap={'4'} align={'center'} justify={'end'}>
-            <Flex align={'center'} gap={'2'}>
-              <Button ghost active={watch('roundTrip')} onClick={() => setValue('roundTrip', true)}>
-                Ida e volta
-              </Button>
-              <Button ghost active={!watch('roundTrip')} onClick={() => setValue('roundTrip', false)}>
-                Só ida
-              </Button>
-            </Flex>
-            <Box>
+          <Flex
+            gap={'4'}
+            align={'center'}
+            justify={'end'}
+            direction={{ '@initial': 'column', '@bp2': 'row' }}
+          >
+            <Flex align={'center'} gap={'4'}>
+              <Controller
+                name="roundTrip"
+                control={control}
+                defaultValue={true}
+                render={({ field }) => (
+                  <Button onClick={() => field.onChange(true)} ghost active={field.value}>
+                    Ida e volta
+                  </Button>
+                )}
+              />
+              <Controller
+                control={control}
+                name="roundTrip"
+                defaultValue={false}
+                render={({ field }) => (
+                  <Button
+                    onClick={() => field.onChange(false)}
+                    ghost
+                    active={!field.value}
+                  >
+                    Só ida
+                  </Button>
+                )}
+              />
               <Popover>
                 <PopoverTrigger asChild>
-                  <Flex as={'button'} gap={'1'}>
+                  <Button ghost css={{ gap: 4 }}>
                     <Text>
                       {Number(watch('adults') || 1) + Number(watch('kids') || 0)}{' '}
                       Passageiros
                     </Text>
-                    <IoIosArrowDown />
-                  </Flex>
+                    <IoIosArrowDown size={16} />
+                  </Button>
                 </PopoverTrigger>
                 <PopoverContent>
                   <Flex align={'center'} justify={'between'} css={{ mb: '$3' }}>
@@ -248,25 +308,18 @@ export default function Home({
                   </Flex>
                 </PopoverContent>
               </Popover>
-            </Box>
-             <Button css={{ width: '100%', '@bp2': { width: 120 } }} type="submit">
+            </Flex>
+            <Button
+              css={{ width: '100%', br: '$7', '@bp2': { width: 120 } }}
+              type="submit"
+            >
               Procurar
             </Button>
           </Flex>
         </Box>
       </Box>
 
-      {flights && (
-        <Box
-          css={{
-            maxWidth: 920,
-            m: 'auto',
-            '@bp2': { border: '2px solid $bg2', borderTop: 0 },
-          }}
-        >
-          <AvailableFlights flights={flights} />{' '}
-        </Box>
-      )}
+      {flights && <AvailableFlights flights={flights} />}
     </Box>
   );
 }
