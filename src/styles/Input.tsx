@@ -18,7 +18,6 @@ export const Input = styled('input', {
   },
 
   '&:disabled': {
-    bc: '$bg1',
     color: '$slate11',
   },
 

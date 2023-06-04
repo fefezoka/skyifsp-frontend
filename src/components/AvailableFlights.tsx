@@ -18,8 +18,6 @@ export const AvailableFlights = ({ flights }: { flights: Flights }) => {
     outward: undefined,
   });
 
-  console.log(flights);
-
   useEffect(() => {
     setSelectedFlights({
       outward: flights.routes[0].flights[0],
@@ -53,7 +51,7 @@ export const AvailableFlights = ({ flights }: { flights: Flights }) => {
           flexGrow: 1,
           ta: 'center',
           px: '$4',
-          '@bp2': { border: '2px solid $bg2', borderTop: 0, maxWidth: 920 },
+          '@bp2': { border: '2px solid $bg2', borderTop: 0, maxWidth: 780 },
         }}
       >
         {flights.routes.map((route, routeIndex) => (
@@ -68,7 +66,7 @@ export const AvailableFlights = ({ flights }: { flights: Flights }) => {
               <Box css={{ mt: '$4', mb: '$6' }}>
                 <Box>
                   <Text size={'7'}>Escolha um </Text>{' '}
-                  <Text size={'7'} weight={'600'}>
+                  <Text size={'7'} weight={'600'} variant={'blue'}>
                     {route.type === 'outward' ? 'voo de ida' : 'voo de volta'}
                   </Text>
                 </Box>
@@ -246,10 +244,8 @@ export const AvailableFlights = ({ flights }: { flights: Flights }) => {
           <Text weight={600}>Preço final</Text>
           <Text weight={600}>
             BRL{' '}
-            {(
-              (selectedFlights.outward?.priceDetails.total || 0) +
-              (selectedFlights.outbound?.priceDetails.total || 0)
-            ).toFixed(2)}
+            {(selectedFlights.outward?.priceDetails.total || 0) +
+              (selectedFlights.outbound?.priceDetails.total || 0)}
           </Text>
         </Flex>
         <Button css={{ width: '100%', mt: '$2', br: '$6' }}>Escolher assentos</Button>

@@ -91,7 +91,6 @@ export default function Home({
   });
 
   const handleSubmitForm = async (data: FormData) => {
-    console.log(data);
     try {
       const { data: flights } = await axios.get(
         `/flights/search?outward=${format(data.dates[0], 'yyyy-MM-dd')}&origin=${
@@ -100,7 +99,6 @@ export default function Home({
           data.roundTrip ? '&outbound=' + format(data.dates[1], 'yyyy-MM-dd') : ''
         }&adults=${data.adults}${data.kids > 0 ? '&kids=' + data.kids : ''}`
       );
-      // console.log(flights);
       setFlights(flights);
     } catch (e) {
       setFlights(undefined);
@@ -121,10 +119,15 @@ export default function Home({
           }}
         >
           <Box css={{ ta: 'center', mb: '$3', position: 'relative' }}>
-            <Heading size="6" variant={'blue'} gradient>
+            <Heading
+              size="6"
+              gradient
+              variant={'blue'}
+              css={{ width: 'fit-content', m: 'auto' }}
+            >
               SKYIFSP
             </Heading>
-            <Box css={{ position: 'absolute', top: 16, right: 0 }}>
+            <Box css={{ position: 'absolute', top: 8, '@bp2': { top: 16 }, right: 0 }}>
               <FlightsExamples />
             </Box>
           </Box>
@@ -205,10 +208,10 @@ export default function Home({
                         field.onChange(Array.isArray(date) ? date : [date])
                       }
                       selectsRange={!(watch('roundTrip') === false)}
-                      value={format(
-                        watch('dates')?.[0].getTime() || new Date(),
-                        'dd/MM/yyyy'
-                      )}
+                      value={
+                        watch('dates')?.[0] &&
+                        format(watch('dates')?.[0].getTime(), 'dd/MM/yyyy')
+                      }
                       selected={watch('dates')?.[0]}
                       startDate={watch('dates')?.[0]}
                       endDate={watch('roundTrip') ? watch('dates')?.[1] : undefined}
@@ -223,7 +226,14 @@ export default function Home({
                     render={({ field }) => (
                       <DatePicker
                         placeholderText={'Data de volta'}
+                        disabled={!watch('dates')?.[0]}
                         onChange={(date) => {
+                          if (
+                            (date as Date).getTime() < getValues('dates')[0].getTime()
+                          ) {
+                            return setValue('dates', [date as Date]);
+                          }
+
                           return field.onChange([getValues('dates')[0], date]);
                         }}
                         selectsEnd
