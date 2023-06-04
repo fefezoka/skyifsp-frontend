@@ -51,14 +51,18 @@ export const AvailableFlights = ({ flights }: { flights: Flights }) => {
           flexGrow: 1,
           ta: 'center',
           px: '$4',
-          '@bp2': { border: '2px solid $bg2', borderTop: 0, maxWidth: 780 },
+          '@bp2': {
+            border: '2px solid $bg3',
+            borderTop: 0,
+            maxWidth: 780,
+          },
         }}
       >
         {flights.routes.map((route, routeIndex) => (
           <Box
             key={routeIndex}
             css={{
-              borderBottom: '2px solid $bg2',
+              ...(routeIndex === 0 && { borderBottom: '2px solid $bg3' }),
               py: '$3',
             }}
           >
@@ -124,9 +128,11 @@ export const AvailableFlights = ({ flights }: { flights: Flights }) => {
                     css={{
                       cursor: 'pointer',
                       px: '$4',
-                      bc: selectedFlights[route.type] === flight ? '$blue9' : '$bg3',
-                      '&:hover': { bc: '$blue9' },
-                      bs: 'var(--colors-bg3) 0px 2px 4px 0px',
+                      bc: selectedFlights[route.type] === flight ? '$blue9' : '$bg2',
+                      ...(!(selectedFlights[route.type] === flight) && {
+                        '&:hover': { bc: '$bg3' },
+                      }),
+                      bs: 'var(--colors-bg3) 0px 1px 3px 1px',
                       mb: '$3',
                       br: '$3',
                       transition: 'all 100ms ease-in',
@@ -206,8 +212,8 @@ export const AvailableFlights = ({ flights }: { flights: Flights }) => {
           top: 0,
           height: '100%',
           width: '100%',
-          borderRight: '2px solid $bg2',
-          borderBottom: '2px solid $bg2',
+          borderRight: '2px solid $bg3',
+          borderBottom: '2px solid $bg3',
           fs: 0,
 
           '@bp2': {
@@ -244,8 +250,10 @@ export const AvailableFlights = ({ flights }: { flights: Flights }) => {
           <Text weight={600}>Preço final</Text>
           <Text weight={600}>
             BRL{' '}
-            {(selectedFlights.outward?.priceDetails.total || 0) +
-              (selectedFlights.outbound?.priceDetails.total || 0)}
+            {(
+              (selectedFlights.outward?.priceDetails.total || 0) +
+              (selectedFlights.outbound?.priceDetails.total || 0)
+            ).toFixed(2)}
           </Text>
         </Flex>
         <Button css={{ width: '100%', mt: '$2', br: '$6' }}>Escolher assentos</Button>

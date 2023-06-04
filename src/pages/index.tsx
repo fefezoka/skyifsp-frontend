@@ -108,7 +108,7 @@ export default function Home({
 
   return (
     <Box as={'main'}>
-      <Box css={{ borderBottom: '2px solid $bg2', bc: '$bg1' }}>
+      <Box css={{ borderBottom: '2px solid $bg3', bc: '$bg1' }}>
         <Box
           as={'form'}
           onSubmit={handleSubmit(handleSubmitForm)}
@@ -290,12 +290,12 @@ export default function Home({
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent>
-                  <Flex align={'center'} justify={'between'} css={{ mb: '$3' }}>
+                  <Flex align={'center'} justify={'between'} css={{ mb: '$4' }}>
                     <Text size={'4'} weight={600}>
                       Adultos
                     </Text>
                     <Input
-                      css={{ width: 144 }}
+                      css={{ width: 84, minHeight: 36 }}
                       type={'number'}
                       defaultValue={1}
                       min={1}
@@ -308,7 +308,7 @@ export default function Home({
                       Crianças
                     </Text>
                     <Input
-                      css={{ width: 144 }}
+                      css={{ width: 84, minHeight: 36 }}
                       type={'number'}
                       defaultValue={0}
                       min={0}

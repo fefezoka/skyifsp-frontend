@@ -14,6 +14,14 @@ const examples = [
   },
   {
     origin: 'CGH',
+    destination: 'GIG',
+    originCountryCode: 'BR',
+    destinationCountryCode: 'BR',
+    outward: '24/06/2023',
+    outbound: '29/06/2023',
+  },
+  {
+    origin: 'CGH',
     destination: 'SSA',
     originCountryCode: 'BR',
     destinationCountryCode: 'BR',
@@ -30,10 +38,26 @@ const examples = [
   },
   {
     origin: 'CGH',
+    destination: 'HND',
+    originCountryCode: 'BR',
+    destinationCountryCode: 'JP',
+    outward: '24/06/2023',
+    outbound: '29/06/2023',
+  },
+  {
+    origin: 'CGH',
     destination: 'BRU',
     originCountryCode: 'BR',
     destinationCountryCode: 'BE',
     outward: '14/06/2023',
+    outbound: '29/06/2023',
+  },
+  {
+    origin: 'CGH',
+    destination: 'BRU',
+    originCountryCode: 'BR',
+    destinationCountryCode: 'BE',
+    outward: '24/06/2023',
     outbound: '29/06/2023',
   },
 ];

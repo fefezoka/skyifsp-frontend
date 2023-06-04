@@ -44,23 +44,23 @@ const StyledButton = styled('button', {
         boxShadow: 'inset 0 0 0 1px $colors$bg3',
 
         '&:hover': {
-          bc: '$bg2',
+          bc: '$bg3',
         },
       },
       red: {
-        bc: '$red10',
+        bc: '$red9',
         boxShadow: 'inset 0 0 0 1px $colors$red8',
 
         '&:hover': {
-          bc: '$red9',
+          bc: '$red10',
         },
       },
       blue: {
-        bc: '$blue10',
+        bc: '$blue9',
         boxShadow: 'inset 0 0 0 1px $colors$blue8',
 
         '&:hover': {
-          bc: '$blue9',
+          bc: '$blue10',
         },
       },
     },
