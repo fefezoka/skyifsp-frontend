@@ -6,7 +6,7 @@ import { differenceInCalendarDays } from 'date-fns';
 import { formatDuration } from '@utils';
 import React, { useEffect, useState } from 'react';
 import { produce } from 'immer';
-import { FlightItinetary } from './FlightItinetary';
+import { FlightItinerary } from './FlightItinerary';
 
 interface Cart {
   outward?: Flight;
@@ -178,7 +178,7 @@ export const AvailableFlights = ({ flights }: { flights: Flights }) => {
                                   size: '$2',
                                   bc: '$slate12',
                                   position: 'absolute',
-                                  left: 66,
+                                  left: '55%',
                                   top: -3,
                                   br: '$round',
                                 }}
@@ -187,7 +187,7 @@ export const AvailableFlights = ({ flights }: { flights: Flights }) => {
                           </Box>
                           <IoAirplane />
                         </Flex>
-                        <FlightItinetary flight={flight}>
+                        <FlightItinerary flight={flight}>
                           {flight.flightLegs.length === 1 ? (
                             <Text variant={'green'} weight={600}>
                               Direto
@@ -198,7 +198,7 @@ export const AvailableFlights = ({ flights }: { flights: Flights }) => {
                               {flight.flightLegs.length > 2 ? 'Paradas' : 'Parada'}
                             </Text>
                           )}
-                        </FlightItinetary>
+                        </FlightItinerary>
                       </Flex>
                       <Flex justify={'center'} as={Text} size={'7'} weight={500}>
                         {new Intl.DateTimeFormat('pt-br', {

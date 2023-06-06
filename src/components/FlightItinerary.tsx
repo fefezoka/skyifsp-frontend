@@ -3,12 +3,12 @@ import { Modal, ModalTrigger, Text, ModalContent, Heading, Flex, Box } from '@st
 import { formatDuration } from '@utils';
 import Image from 'next/image';
 
-interface IFlightItinetary {
+interface IFlightItinerary {
   flight: Flight;
   children: React.ReactNode;
 }
 
-export const FlightItinetary = ({ children, flight }: IFlightItinetary) => {
+export const FlightItinerary = ({ children, flight }: IFlightItinerary) => {
   return (
     <Modal>
       <ModalTrigger asChild>{children}</ModalTrigger>
@@ -43,7 +43,13 @@ export const FlightItinetary = ({ children, flight }: IFlightItinetary) => {
                   </Box>
                 </Flex>
               )}
-              <Flex align={'center'} justify={'between'} css={{ py: '$4' }}>
+              <Flex
+                align={'center'}
+                justify={'between'}
+                css={{ py: '$4' }}
+                gap={{ '@initial': '5' }}
+                direction={{ '@initial': 'column', '@bp2': 'row' }}
+              >
                 {Object.values({
                   origin: leg.origin,
                   destination: leg.destination,
