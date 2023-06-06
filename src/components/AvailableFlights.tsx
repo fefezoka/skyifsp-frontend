@@ -2,10 +2,11 @@ import { Box, Button, Flex, Text } from '@styles';
 import Image from 'next/image';
 import { RiFlightLandLine, RiFlightTakeoffLine } from 'react-icons/ri';
 import { IoAirplane } from 'react-icons/io5';
-import { differenceInDays } from 'date-fns';
+import { differenceInCalendarDays } from 'date-fns';
 import { formatDuration } from '@utils';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { produce } from 'immer';
+import { FlightItinetary } from './FlightItinetary';
 
 interface Cart {
   outward?: Flight;
@@ -62,7 +63,7 @@ export const AvailableFlights = ({ flights }: { flights: Flights }) => {
           <Box
             key={routeIndex}
             css={{
-              ...(routeIndex === 0 && { borderBottom: '2px solid $bg3' }),
+              ...(routeIndex === 1 && { borderTop: '2px solid $bg3' }),
               py: '$3',
             }}
           >
@@ -165,16 +166,39 @@ export const AvailableFlights = ({ flights }: { flights: Flights }) => {
                           <Box
                             css={{
                               height: 1,
+                              position: 'relative',
                               bc: '$slate12',
                               width: 84,
                               '@bp2': { width: 120 },
                             }}
-                          />
+                          >
+                            {flight.flightLegs.length > 1 && (
+                              <Box
+                                css={{
+                                  size: '$2',
+                                  bc: '$slate12',
+                                  position: 'absolute',
+                                  left: 66,
+                                  top: -3,
+                                  br: '$round',
+                                }}
+                              />
+                            )}
+                          </Box>
                           <IoAirplane />
                         </Flex>
-                        <Text variant={'green'} weight={600}>
-                          Direto
-                        </Text>
+                        <FlightItinetary flight={flight}>
+                          {flight.flightLegs.length === 1 ? (
+                            <Text variant={'green'} weight={600}>
+                              Direto
+                            </Text>
+                          ) : (
+                            <Text variant={'yellow'} weight={600}>
+                              {flight.flightLegs.length - 1}{' '}
+                              {flight.flightLegs.length > 2 ? 'Paradas' : 'Parada'}
+                            </Text>
+                          )}
+                        </FlightItinetary>
                       </Flex>
                       <Flex justify={'center'} as={Text} size={'7'} weight={500}>
                         {new Intl.DateTimeFormat('pt-br', {
@@ -182,10 +206,16 @@ export const AvailableFlights = ({ flights }: { flights: Flights }) => {
                           minute: 'numeric',
                           dayPeriod: 'long',
                         }).format(flight.arrivalDate)}
-                        {differenceInDays(flight.arrivalDate, flight.departureDate) >
-                          0 && (
+                        {differenceInCalendarDays(
+                          flight.arrivalDate,
+                          flight.departureDate
+                        ) > 0 && (
                           <Text size={'2'}>
-                            +{differenceInDays(flight.arrivalDate, flight.departureDate)}
+                            +
+                            {differenceInCalendarDays(
+                              flight.arrivalDate,
+                              flight.departureDate
+                            )}
                           </Text>
                         )}
                       </Flex>
@@ -212,16 +242,18 @@ export const AvailableFlights = ({ flights }: { flights: Flights }) => {
           top: 0,
           height: '100%',
           width: '100%',
-          borderRight: '2px solid $bg3',
-          borderBottom: '2px solid $bg3',
           fs: 0,
+          borderTop: '2px solid $bg3',
 
           '@bp2': {
-            width: 260,
+            borderTop: 0,
+            borderRight: '2px solid $bg3',
+            borderBottom: '2px solid $bg3',
+            width: 270,
           },
         }}
       >
-        <Box css={{ my: '$3' }}>
+        <Box css={{ my: '$3', ta: 'center' }}>
           <Text size={'7'} weight={600} variant={'blue'}>
             Resumo do pedido
           </Text>
