@@ -1,5 +1,6 @@
 import { default as instance } from 'axios';
 import { parseISO } from 'date-fns';
+import { getCookie } from 'cookies-next';
 
 const isoDateFormat =
   /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d*)?(?:[-+]\d{2}:?\d{2}|Z)?$/;
@@ -26,6 +27,14 @@ const axios = instance.create({
     process.env.NEXT_PUBLIC_VERCEL_ENV === 'production'
       ? `https://skyifsp-backend.vercel.app/`
       : 'http://localhost:3001/',
+});
+
+axios.interceptors.request.use((config) => {
+  const token = getCookie('skyifsp_access_token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
 });
 
 axios.interceptors.response.use((originalResponse) => {

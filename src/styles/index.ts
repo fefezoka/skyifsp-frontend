@@ -20,3 +20,4 @@ export {
   ModalTrigger,
   StyledModalContent,
 } from './Modal';
+export { Tabs, StyledTabsContent, TabsContent, TabsList, TabsTrigger } from './Tabs';
