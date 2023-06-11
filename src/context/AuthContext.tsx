@@ -19,9 +19,9 @@ type UserSignUp = {
 };
 
 type AuthContextType = {
-  signIn: (user: UserSignIn) => Promise<void>;
-  signOut: () => void;
-  signUp: (user: UserSignUp) => Promise<void>;
+  login: (user: UserSignIn) => Promise<void>;
+  logout: () => void;
+  signUp: (user: UserSignUp) => Promise<{ status: number }>;
   user: User | null;
   isAuthenticated: boolean;
 };
@@ -31,7 +31,6 @@ export const AuthContext = createContext({} as AuthContextType);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
-  console.log(user);
 
   const isAuthenticated = !!user;
 
@@ -43,27 +42,23 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, []);
 
-  const signIn = async (user: UserSignIn) => {
-    try {
-      const { data } = await axios.post('/auth/signin', user);
+  const login = async (user: UserSignIn) => {
+    const { data } = await axios.post('/auth/login', user);
 
-      setCookie('skyifsp_access_token', data.access_token);
+    setCookie('skyifsp_access_token', data.access_token);
 
-      router.reload();
-    } catch (error) {
-      console.log(error);
-    }
+    router.reload();
   };
 
   const signUp = async (user: UserSignUp) => {
-    try {
-      await axios.post('user', user);
-    } catch (error) {
-      console.log(error);
-    }
+    const { status } = await axios.post('user', user);
+
+    return {
+      status,
+    };
   };
 
-  const signOut = () => {
+  const logout = () => {
     try {
       deleteCookie('skyifsp_access_token');
       router.reload();
@@ -73,7 +68,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ signIn, signOut, user, isAuthenticated, signUp }}>
+    <AuthContext.Provider value={{ login, logout, user, isAuthenticated, signUp }}>
       {children}
     </AuthContext.Provider>
   );

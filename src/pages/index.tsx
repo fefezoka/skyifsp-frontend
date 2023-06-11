@@ -1,14 +1,16 @@
-import Image from 'next/image';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import { GetStaticProps } from 'next';
+import Image from 'next/image';
 import { Controller, useForm } from 'react-hook-form';
+import { DropdownMenu } from '@radix-ui/react-dropdown-menu';
+import { FaUser } from 'react-icons/fa';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { IoIosArrowDown } from 'react-icons/io';
 import { MdTripOrigin, MdLocationOn, MdCalendarMonth } from 'react-icons/md';
 import axios from '../services/axios';
 import { format } from 'date-fns';
-import { AuthContext, useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/AuthContext';
 import {
   Input,
   Box,
@@ -22,6 +24,10 @@ import {
   DatePicker,
   PopoverContent,
   Grid,
+  MenuTrigger,
+  MenuContent,
+  MenuItem,
+  MenuSeparator,
 } from '@styles';
 import { AvailableFlights, FlightsExamples, Login, PopularFlights } from '@components';
 import { spinner } from '@assets';
@@ -80,7 +86,7 @@ export default function Home({
 }: {
   airports: { value: string; label: string }[];
 }) {
-  const { user, signOut } = useAuth();
+  const auth = useAuth();
   const [flights, setFlights] = useState<Flights>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>();
@@ -126,7 +132,7 @@ export default function Home({
             p: '$6',
           }}
         >
-          <Box css={{ ta: 'center', mb: '$3', position: 'relative' }}>
+          <Box css={{ ta: 'center', mb: '$4', position: 'relative' }}>
             <Heading
               size="6"
               gradient
@@ -135,21 +141,39 @@ export default function Home({
             >
               SKYIFSP
             </Heading>
-            <Box css={{ position: 'absolute', top: 8, '@bp2': { top: 16 }, right: 0 }}>
+            <Box
+              css={{
+                position: 'absolute',
+                top: 8,
+                left: 0,
+                '@bp2': { top: 16 },
+              }}
+            >
               <FlightsExamples />
             </Box>
-            <Box css={{ position: 'absolute', top: 8, '@bp2': { top: 16 }, right: 52 }}>
-              {user ? (
-                <Flex direction={'column'} gap={'1'}>
-                  <Text weight={600}>{user.name}</Text>
-                  <Text
-                    weight={600}
-                    onClick={() => signOut()}
-                    css={{ cursor: 'pointer' }}
-                  >
-                    Sair
-                  </Text>
-                </Flex>
+            <Box css={{ position: 'absolute', top: 8, '@bp2': { top: 16 }, right: 0 }}>
+              {auth.user ? (
+                <DropdownMenu>
+                  <MenuTrigger>
+                    <Flex direction={'column'} gap={'1'}>
+                      <Flex
+                        align={'center'}
+                        justify={'center'}
+                        css={{ br: '$round', bc: '$bg3', size: 36, cursor: 'pointer' }}
+                      >
+                        <FaUser />
+                      </Flex>
+                    </Flex>
+                  </MenuTrigger>
+                  <MenuContent>
+                    <MenuItem>{auth.user.name}</MenuItem>
+                    <MenuItem>Configurações</MenuItem>
+                    <MenuSeparator />
+                    <MenuItem onClick={() => auth.logout()} theme={'alert'}>
+                      Sair
+                    </MenuItem>
+                  </MenuContent>
+                </DropdownMenu>
               ) : (
                 <Login />
               )}

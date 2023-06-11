@@ -1,6 +1,8 @@
+import Image from 'next/image';
 import React, { forwardRef } from 'react';
 import { IconType } from 'react-icons/lib';
 import { styled } from 'stitches.config';
+import { whiteSpinner } from '../assets';
 
 const StyledButton = styled('button', {
   all: 'unset',
@@ -123,15 +125,17 @@ const StyledButton = styled('button', {
 });
 
 interface IButton extends React.ComponentProps<typeof StyledButton> {
+  loading?: boolean;
   Icon?: IconType;
 }
 
 export const Button = forwardRef<HTMLButtonElement, IButton>(
-  ({ Icon, ...props }, forwardedRef) => {
+  ({ Icon, loading, ...props }, forwardedRef) => {
     return (
       <StyledButton type="button" {...props} ref={forwardedRef}>
+        {loading && <Image src={whiteSpinner} height={24} width={24} alt="" />}
         {Icon && <Icon size={18} />}
-        {!Icon && props.children}
+        {!loading && !Icon && props.children}
       </StyledButton>
     );
   }

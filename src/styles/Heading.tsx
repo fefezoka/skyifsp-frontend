@@ -31,7 +31,7 @@ export const Heading = React.forwardRef<
   const textCss: Record<HeadingSizeVariants, CSS> = {
     1: { fontWeight: 600, lineHeight: '18px', '@bp2': { lineHeight: '26px' } },
     2: { fontWeight: 600, lineHeight: '28px', '@bp2': { lineHeight: '32px' } },
-    3: { fontWeight: 600, lineHeight: '36px', '@bp2': { lineHeight: '42px' } },
+    3: { fontWeight: 700, lineHeight: '36px', '@bp2': { lineHeight: '42px' } },
     4: { fontWeight: 700, lineHeight: '40px', '@bp2': { lineHeight: '48px' } },
     5: { fontWeight: 700, lineHeight: '48px', '@bp2': { lineHeight: '56px' } },
     6: { fontWeight: 700, lineHeight: '54px', '@bp2': { lineHeight: '72px' } },

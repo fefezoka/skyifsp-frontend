@@ -62,7 +62,7 @@ export const PopularFlights = () => {
               <Text weight={600} size={'4'}>
                 {flight.destination}
               </Text>
-              <IoIosArrowDroprightCircle size={24} />
+              <IoIosArrowDroprightCircle size={24} color={'var(--colors-slate12)'} />
             </Flex>
           </Flex>
         ))}

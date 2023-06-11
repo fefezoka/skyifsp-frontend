@@ -5,5 +5,6 @@ import shanghai from './shangai.jpg';
 import tokyo from './tokyo.jpg';
 import saopaulo from './saopaulo.jpg';
 import spinner from './Spinner.svg';
+import whiteSpinner from './WhiteSpinner.svg';
 
-export { rio, bruxelas, salvador, saopaulo, shanghai, tokyo, spinner };
+export { rio, bruxelas, salvador, saopaulo, shanghai, tokyo, spinner, whiteSpinner };
