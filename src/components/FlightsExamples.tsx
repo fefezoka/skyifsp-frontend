@@ -14,14 +14,6 @@ const examples = [
   },
   {
     origin: 'CGH',
-    destination: 'GIG',
-    originCountryCode: 'BR',
-    destinationCountryCode: 'BR',
-    outward: '21/06/2023',
-    outbound: '29/06/2023',
-  },
-  {
-    origin: 'CGH',
     destination: 'SSA',
     originCountryCode: 'BR',
     destinationCountryCode: 'BR',
@@ -36,7 +28,14 @@ const examples = [
     outward: '14/06/2023',
     outbound: '29/06/2023',
   },
-
+  {
+    origin: 'BRU',
+    destination: 'HND',
+    originCountryCode: 'BE',
+    destinationCountryCode: 'JP',
+    outward: '15/06/2023',
+    outbound: '29/06/2023',
+  },
   {
     origin: 'CGH',
     destination: 'BRU',

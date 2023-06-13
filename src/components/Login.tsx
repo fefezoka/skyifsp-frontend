@@ -20,7 +20,6 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '../context/AuthContext';
 import { AiOutlineUser } from 'react-icons/ai';
-import { AxiosError } from 'axios';
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -29,11 +28,18 @@ const loginSchema = z.object({
 
 type LoginType = z.infer<typeof loginSchema>;
 
-const signUpSchema = z.object({
-  name: z.string().min(3).max(64),
-  email: z.string().email(),
-  password: z.string().min(4).max(22),
-});
+const signUpSchema = z
+  .object({
+    name: z.string().min(3).max(64),
+    email: z.string().email(),
+    password: z.string().min(4).max(22),
+    confirmPassword: z.string(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.password !== data.confirmPassword) {
+      ctx.addIssue({ code: 'custom', path: ['confirmPassword'] });
+    }
+  });
 
 type SignUpType = z.infer<typeof signUpSchema>;
 
@@ -65,8 +71,11 @@ export const Login = () => {
   const handleSignUp = async (data: SignUpType) => {
     try {
       setLoading(true);
+
+      const { confirmPassword, ...signUpData } = data;
+
       await auth.signUp({
-        ...data,
+        ...signUpData,
         name: data.name.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase()),
       });
 
@@ -80,11 +89,16 @@ export const Login = () => {
   };
 
   return (
-    <>
+    <Box>
       <ToastContainer />
       <Modal open={open} onOpenChange={setOpen}>
         <ModalTrigger asChild>
-          <Flex css={{ height: 36, cursor: 'pointer' }} align={'center'} gap={'2'}>
+          <Flex
+            css={{ height: 36, cursor: 'pointer' }}
+            align={'center'}
+            gap={'2'}
+            justify={'end'}
+          >
             <AiOutlineUser color="var(--colors-blue9)" size={18} />
             <Text weight={600}>ENTRAR</Text>
           </Flex>
@@ -179,6 +193,17 @@ export const Login = () => {
                   </Flex>
                   <Input type={'password'} {...signUp.register('password')} />
                 </Box>
+                <Box css={{ mb: '$4' }}>
+                  <Flex justify={'between'} css={{ mb: '$2' }}>
+                    <Text>Confirmar senha</Text>
+                    {signUp.formState.errors.confirmPassword && (
+                      <Text weight={600} variant={'red'}>
+                        Senhas não coincidem
+                      </Text>
+                    )}
+                  </Flex>
+                  <Input type={'password'} {...signUp.register('confirmPassword')} />
+                </Box>
                 <Flex css={{ mt: '$6' }} justify={'end'}>
                   <Button type={'submit'} css={{ width: '100%' }} loading={loading}>
                     Cadastre-se
@@ -189,6 +214,6 @@ export const Login = () => {
           </Tabs>
         </ModalContent>
       </Modal>
-    </>
+    </Box>
   );
 };

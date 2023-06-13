@@ -132,7 +132,8 @@ export default function Home({
             p: '$6',
           }}
         >
-          <Box css={{ ta: 'center', mb: '$4', position: 'relative' }}>
+          <Grid columns={'3'} css={{ mb: '$4' }} align={'center'}>
+            <FlightsExamples />
             <Heading
               size="6"
               gradient
@@ -141,44 +142,36 @@ export default function Home({
             >
               SKYIFSP
             </Heading>
-            <Box
-              css={{
-                position: 'absolute',
-                top: 8,
-                left: 0,
-                '@bp2': { top: 16 },
-              }}
-            >
-              <FlightsExamples />
-            </Box>
-            <Box css={{ position: 'absolute', top: 8, '@bp2': { top: 16 }, right: 0 }}>
-              {auth.user ? (
-                <DropdownMenu>
-                  <MenuTrigger>
-                    <Flex direction={'column'} gap={'1'}>
-                      <Flex
-                        align={'center'}
-                        justify={'center'}
-                        css={{ br: '$round', bc: '$bg3', size: 36, cursor: 'pointer' }}
-                      >
-                        <FaUser />
-                      </Flex>
-                    </Flex>
-                  </MenuTrigger>
-                  <MenuContent>
-                    <MenuItem>{auth.user.name}</MenuItem>
-                    <MenuItem>Configurações</MenuItem>
-                    <MenuSeparator />
-                    <MenuItem onClick={() => auth.logout()} theme={'alert'}>
-                      Sair
-                    </MenuItem>
-                  </MenuContent>
-                </DropdownMenu>
-              ) : (
-                <Login />
-              )}
-            </Box>
-          </Box>
+            {auth.user ? (
+              <DropdownMenu>
+                <MenuTrigger asChild>
+                  <Flex
+                    align={'center'}
+                    justify={'center'}
+                    css={{
+                      br: '$round',
+                      bc: '$bg3',
+                      size: 36,
+                      cursor: 'pointer',
+                      justifySelf: 'end',
+                    }}
+                  >
+                    <FaUser />
+                  </Flex>
+                </MenuTrigger>
+                <MenuContent>
+                  <MenuItem>{auth.user.name}</MenuItem>
+                  <MenuItem>Configurações</MenuItem>
+                  <MenuSeparator />
+                  <MenuItem onClick={() => auth.logout()} theme={'alert'}>
+                    Sair
+                  </MenuItem>
+                </MenuContent>
+              </DropdownMenu>
+            ) : (
+              <Login />
+            )}
+          </Grid>
           <Box as={'form'} onSubmit={handleSubmit(handleSubmitForm)}>
             <Grid
               columns={{ '@initial': '1', '@bp2': '3' }}

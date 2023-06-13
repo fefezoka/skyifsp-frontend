@@ -38,7 +38,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const token = getCookie('skyifsp_access_token') as string;
 
     if (token) {
-      axios.get<User>('user/me').then((response) => setUser(response.data));
+      axios.get<User>('users/me').then((response) => setUser(response.data));
     }
   }, []);
 
@@ -51,7 +51,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const signUp = async (user: UserSignUp) => {
-    const { status } = await axios.post('user', user);
+    const { status } = await axios.post('users', user);
 
     return {
       status,

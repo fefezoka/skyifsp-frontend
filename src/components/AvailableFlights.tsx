@@ -1,12 +1,12 @@
-import { Box, Button, Flex, Text } from '@styles';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { RiFlightLandLine, RiFlightTakeoffLine } from 'react-icons/ri';
 import { IoAirplane } from 'react-icons/io5';
 import { differenceInCalendarDays } from 'date-fns';
 import { formatDuration } from '@utils';
-import React, { useEffect, useState } from 'react';
 import { produce } from 'immer';
 import { FlightItinerary } from './FlightItinerary';
+import { Box, Button, Flex, Text } from '@styles';
 
 interface Cart {
   outward?: Flight;
@@ -81,44 +81,49 @@ export const AvailableFlights = ({ flights }: { flights: Flights }) => {
                   )}
                 </Text>
               </Box>
-              <Flex css={{ mb: '$4', mx: '$4' }} justify={'between'}>
+              <Flex
+                css={{
+                  mb: '$4',
+                  mx: '$4',
+                  ...(route.type === 'outbound' && { flexDirection: 'row-reverse' }),
+                }}
+                justify={'between'}
+              >
                 {Object.values({
                   origin: flights.origin,
                   destination: flights.destination,
-                })
-                  .sort(() => (routeIndex === 0 ? 1 : -1))
-                  .map((airport, airportIndex) => (
+                }).map((airport, airportIndex) => (
+                  <Flex
+                    direction={'column'}
+                    align={'center'}
+                    key={routeIndex + airportIndex}
+                    css={{ '@bp2': { width: '33.33%' } }}
+                  >
+                    <Image
+                      width={36}
+                      height={27}
+                      alt=""
+                      draggable={false}
+                      src={`https://flagicons.lipis.dev/flags/4x3/${airport.countryCode.toLowerCase()}.svg`}
+                    />
+                    <Text weight={600} size={'5'} css={{ mt: '$3' }}>
+                      {`${airport.city} - ${airport.country}`}
+                    </Text>
                     <Flex
-                      direction={'column'}
                       align={'center'}
-                      key={routeIndex + airportIndex}
-                      css={{ '@bp2': { width: '33.33%' } }}
+                      justify={'center'}
+                      gap={'1'}
+                      css={{ mt: '$1' }}
                     >
-                      <Image
-                        width={36}
-                        height={27}
-                        alt=""
-                        draggable={false}
-                        src={`https://flagicons.lipis.dev/flags/4x3/${airport.countryCode.toLowerCase()}.svg`}
-                      />
-                      <Text weight={600} size={'5'} css={{ mt: '$3' }}>
-                        {`${airport.city} - ${airport.country}`}
-                      </Text>
-                      <Flex
-                        align={'center'}
-                        justify={'center'}
-                        gap={'1'}
-                        css={{ mt: '$1' }}
-                      >
-                        {airportIndex === 0 ? (
-                          <RiFlightTakeoffLine size={18} />
-                        ) : (
-                          <RiFlightLandLine size={18} />
-                        )}
-                        <Text>{airport.airport + ' - ' + airport.code}</Text>
-                      </Flex>
+                      {airportIndex === 0 ? (
+                        <RiFlightTakeoffLine size={18} />
+                      ) : (
+                        <RiFlightLandLine size={18} />
+                      )}
+                      <Text>{airport.airport + ' - ' + airport.code}</Text>
                     </Flex>
-                  ))}
+                  </Flex>
+                ))}
               </Flex>
               <Box css={{ ta: 'center' }}>
                 {route.flights.map((flight, flightIndex) => (
