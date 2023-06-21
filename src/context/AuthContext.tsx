@@ -1,10 +1,13 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { getCookie, deleteCookie, setCookie, hasCookie } from 'cookies-next';
+import { createContext, useContext, useEffect, useState } from 'react';
+import { getCookie, deleteCookie, setCookie } from 'cookies-next';
 import axios from '../services/axios';
 import { useRouter } from 'next/router';
 
 type User = {
+  id: string;
   name: string;
+  email: string;
+  birthdate: Date;
 };
 
 type UserSignIn = {
@@ -35,7 +38,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const isAuthenticated = !!user;
 
   useEffect(() => {
-    const token = getCookie('skyifsp_access_token') as string;
+    const token = getCookie('skyifsp.session_token') as string;
 
     if (token) {
       axios.get<User>('users/me').then((response) => setUser(response.data));
@@ -45,7 +48,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const login = async (user: UserSignIn) => {
     const { data } = await axios.post('/auth/login', user);
 
-    setCookie('skyifsp_access_token', data.access_token);
+    setCookie('skyifsp.session_token', data.access_token);
 
     router.reload();
   };
@@ -60,7 +63,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const logout = () => {
     try {
-      deleteCookie('skyifsp_access_token');
+      deleteCookie('skyifsp.session_token');
       router.reload();
     } catch (error) {
       console.log(error);

@@ -9,31 +9,31 @@ const examples = [
     destination: 'GIG',
     originCountryCode: 'BR',
     destinationCountryCode: 'BR',
-    outward: '14/06/2023',
-    outbound: '29/06/2023',
+    outward: '1/07/2023',
+    outbound: '29/07/2023',
   },
   {
     origin: 'CGH',
     destination: 'SSA',
     originCountryCode: 'BR',
     destinationCountryCode: 'BR',
-    outward: '14/06/2023',
-    outbound: '29/06/2023',
+    outward: '1/07/2023',
+    outbound: '29/07/2023',
   },
   {
     origin: 'CGH',
     destination: 'HND',
     originCountryCode: 'BR',
     destinationCountryCode: 'JP',
-    outward: '14/06/2023',
-    outbound: '29/06/2023',
+    outward: '1/07/2023',
+    outbound: '29/07/2023',
   },
   {
     origin: 'BRU',
     destination: 'HND',
     originCountryCode: 'BE',
     destinationCountryCode: 'JP',
-    outward: '15/06/2023',
+    outward: '2/07/2023',
     outbound: '29/06/2023',
   },
   {
@@ -41,8 +41,8 @@ const examples = [
     destination: 'BRU',
     originCountryCode: 'BR',
     destinationCountryCode: 'BE',
-    outward: '14/06/2023',
-    outbound: '29/06/2023',
+    outward: '1/07/2023',
+    outbound: '30/07/2023',
   },
 ];
 
@@ -53,7 +53,7 @@ export const FlightsExamples = () => {
         <Flex
           align={'center'}
           justify={'center'}
-          css={{ br: '$round', bc: '$bg3', size: 36, cursor: 'pointer' }}
+          css={{ br: '$round', bc: '$bg2', size: 36, cursor: 'pointer' }}
         >
           <IoHelpSharp size={20} />
         </Flex>

@@ -30,7 +30,7 @@ const axios = instance.create({
 });
 
 axios.interceptors.request.use((config) => {
-  const token = getCookie('skyifsp_access_token');
+  const token = getCookie('skyifsp.session_token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }

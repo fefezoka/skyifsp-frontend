@@ -29,7 +29,13 @@ import {
   MenuItem,
   MenuSeparator,
 } from '@styles';
-import { AvailableFlights, FlightsExamples, Login, PopularFlights } from '@components';
+import {
+  AvailableFlights,
+  FlightsExamples,
+  Header,
+  Login,
+  PopularFlights,
+} from '@components';
 import { spinner } from '@assets';
 
 export const getStaticProps: GetStaticProps = async () => {
@@ -86,7 +92,6 @@ export default function Home({
 }: {
   airports: { value: string; label: string }[];
 }) {
-  const auth = useAuth();
   const [flights, setFlights] = useState<Flights>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>();
@@ -124,7 +129,7 @@ export default function Home({
 
   return (
     <Box as={'main'}>
-      <Box css={{ borderBottom: '2px solid $bg3', bc: '$bg1' }}>
+      <Box css={{ borderBottom: '2px solid $bg2', bc: '$bg1' }}>
         <Box
           css={{
             maxWidth: 920,
@@ -132,47 +137,8 @@ export default function Home({
             p: '$6',
           }}
         >
-          <Grid columns={'3'} css={{ mb: '$4' }} align={'center'}>
-            <FlightsExamples />
-            <Heading
-              size="6"
-              gradient
-              variant={'blue'}
-              css={{ width: 'fit-content', m: 'auto' }}
-            >
-              SKYIFSP
-            </Heading>
-            {auth.user ? (
-              <DropdownMenu>
-                <MenuTrigger asChild>
-                  <Flex
-                    align={'center'}
-                    justify={'center'}
-                    css={{
-                      br: '$round',
-                      bc: '$bg3',
-                      size: 36,
-                      cursor: 'pointer',
-                      justifySelf: 'end',
-                    }}
-                  >
-                    <FaUser />
-                  </Flex>
-                </MenuTrigger>
-                <MenuContent>
-                  <MenuItem>{auth.user.name}</MenuItem>
-                  <MenuItem>Configurações</MenuItem>
-                  <MenuSeparator />
-                  <MenuItem onClick={() => auth.logout()} theme={'alert'}>
-                    Sair
-                  </MenuItem>
-                </MenuContent>
-              </DropdownMenu>
-            ) : (
-              <Login />
-            )}
-          </Grid>
-          <Box as={'form'} onSubmit={handleSubmit(handleSubmitForm)}>
+          <Header />
+          <Box as={'form'} css={{ mt: '$4' }} onSubmit={handleSubmit(handleSubmitForm)}>
             <Grid
               columns={{ '@initial': '1', '@bp2': '3' }}
               align={'stretch'}

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import {
   Box,
   Button,
+  DatePicker,
   Flex,
   Input,
   Modal,
@@ -15,7 +16,7 @@ import {
   ToastContainer,
   toast,
 } from '@styles';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '../context/AuthContext';
@@ -32,6 +33,7 @@ const signUpSchema = z
   .object({
     name: z.string().min(3).max(64),
     email: z.string().email(),
+    birthdate: z.date(),
     password: z.string().min(4).max(22),
     confirmPassword: z.string(),
   })
@@ -89,131 +91,154 @@ export const Login = () => {
   };
 
   return (
-    <Box>
-      <ToastContainer />
-      <Modal open={open} onOpenChange={setOpen}>
-        <ModalTrigger asChild>
-          <Flex
-            css={{ height: 36, cursor: 'pointer' }}
-            align={'center'}
-            gap={'2'}
-            justify={'end'}
-          >
-            <AiOutlineUser color="var(--colors-blue9)" size={18} />
-            <Text weight={600}>ENTRAR</Text>
-          </Flex>
-        </ModalTrigger>
-        <ModalContent css={{ p: 0 }}>
-          <Tabs defaultValue={tab} onValueChange={(value) => setTab(value as typeof tab)}>
-            <TabsList asChild>
-              <Flex justify={'center'} css={{ borderBottom: '2px solid $bg2' }}>
-                <TabsTrigger value="login" asChild>
-                  <Button
-                    ghost
-                    active={tab === 'login'}
-                    css={{ fontSize: '$4', height: 48, flex: 1 }}
-                  >
-                    Login
-                  </Button>
-                </TabsTrigger>
-                <TabsTrigger value="signup" asChild>
-                  <Button
-                    ghost
-                    active={tab === 'signup'}
-                    css={{ fontSize: '$4', height: 48, flex: 1 }}
-                  >
-                    Cadastro
-                  </Button>
-                </TabsTrigger>
+    <Modal open={open} onOpenChange={setOpen}>
+      <ModalTrigger asChild>
+        <Flex
+          css={{ height: 36, cursor: 'pointer' }}
+          align={'center'}
+          gap={'2'}
+          justify={'end'}
+        >
+          <AiOutlineUser color="var(--colors-blue9)" size={18} />
+          <Text weight={600}>ENTRAR</Text>
+        </Flex>
+      </ModalTrigger>
+      <ModalContent css={{ p: 0 }}>
+        <Tabs defaultValue={tab} onValueChange={(value) => setTab(value as typeof tab)}>
+          <TabsList asChild>
+            <Flex justify={'center'} css={{ borderBottom: '2px solid $bg2' }}>
+              <TabsTrigger value="login" asChild>
+                <Button
+                  ghost
+                  active={tab === 'login'}
+                  css={{ fontSize: '$4', height: 48, flex: 1 }}
+                >
+                  Login
+                </Button>
+              </TabsTrigger>
+              <TabsTrigger value="signup" asChild>
+                <Button
+                  ghost
+                  active={tab === 'signup'}
+                  css={{ fontSize: '$4', height: 48, flex: 1 }}
+                >
+                  Cadastro
+                </Button>
+              </TabsTrigger>
+            </Flex>
+          </TabsList>
+          <TabsContent value="login">
+            <Box as={'form'} onSubmit={login.handleSubmit(handleSignIn)}>
+              <Box css={{ mb: '$4' }}>
+                <Flex justify={'between'} css={{ mb: '$2' }}>
+                  <Text>Email</Text>
+                  {login.formState.errors.email && (
+                    <Text weight={600} variant={'red'}>
+                      Email inválido
+                    </Text>
+                  )}
+                </Flex>
+                <Input {...login.register('email')} />
+              </Box>
+              <Box css={{ mb: '$4' }}>
+                <Flex justify={'between'} css={{ mb: '$2' }}>
+                  <Text>Senha</Text>
+                  {login.formState.errors.password && (
+                    <Text weight={600} variant={'red'}>
+                      Senha inválida
+                    </Text>
+                  )}
+                </Flex>
+                <Input type={'password'} {...login.register('password')} />
+              </Box>
+              <Flex css={{ mt: '$6' }} justify={'end'}>
+                <Button type={'submit'} css={{ width: '100%' }} loading={loading}>
+                  Logar
+                </Button>
               </Flex>
-            </TabsList>
-            <TabsContent value="login">
-              <Box as={'form'} onSubmit={login.handleSubmit(handleSignIn)}>
-                <Box css={{ mb: '$4' }}>
-                  <Flex justify={'between'} css={{ mb: '$2' }}>
-                    <Text>Email</Text>
-                    {login.formState.errors.email && (
-                      <Text weight={600} variant={'red'}>
-                        Email inválido
-                      </Text>
-                    )}
-                  </Flex>
-                  <Input {...login.register('email')} />
-                </Box>
-                <Box css={{ mb: '$4' }}>
-                  <Flex justify={'between'} css={{ mb: '$2' }}>
-                    <Text>Senha</Text>
-                    {login.formState.errors.password && (
-                      <Text weight={600} variant={'red'}>
-                        Senha inválida
-                      </Text>
-                    )}
-                  </Flex>
-                  <Input type={'password'} {...login.register('password')} />
-                </Box>
-                <Flex css={{ mt: '$6' }} justify={'end'}>
-                  <Button type={'submit'} css={{ width: '100%' }} loading={loading}>
-                    Logar
-                  </Button>
+            </Box>
+          </TabsContent>
+          <TabsContent value="signup">
+            <Box as={'form'} onSubmit={signUp.handleSubmit(handleSignUp)}>
+              <Box css={{ mb: '$4' }}>
+                <Flex justify={'between'} css={{ mb: '$2' }}>
+                  <Text>Nome</Text>
+                  {signUp.formState.errors.name && (
+                    <Text weight={600} variant={'red'}>
+                      Nome inválido
+                    </Text>
+                  )}
                 </Flex>
+                <Input {...signUp.register('name')} />
               </Box>
-            </TabsContent>
-            <TabsContent value="signup">
-              <Box as={'form'} onSubmit={signUp.handleSubmit(handleSignUp)}>
-                <Box css={{ mb: '$4' }}>
-                  <Flex justify={'between'} css={{ mb: '$2' }}>
-                    <Text>Nome</Text>
-                    {signUp.formState.errors.name && (
-                      <Text weight={600} variant={'red'}>
-                        Nome inválido
-                      </Text>
-                    )}
-                  </Flex>
-                  <Input {...signUp.register('name')} />
-                </Box>
-                <Box css={{ mb: '$4' }}>
-                  <Flex justify={'between'} css={{ mb: '$2' }}>
-                    <Text>Email</Text>
-                    {signUp.formState.errors.email && (
-                      <Text weight={600} variant={'red'}>
-                        Email inválido
-                      </Text>
-                    )}
-                  </Flex>
-                  <Input {...signUp.register('email')} />
-                </Box>
-                <Box css={{ mb: '$4' }}>
-                  <Flex justify={'between'} css={{ mb: '$2' }}>
-                    <Text>Senha</Text>
-                    {signUp.formState.errors.password && (
-                      <Text weight={600} variant={'red'}>
-                        Senha inválida
-                      </Text>
-                    )}
-                  </Flex>
-                  <Input type={'password'} {...signUp.register('password')} />
-                </Box>
-                <Box css={{ mb: '$4' }}>
-                  <Flex justify={'between'} css={{ mb: '$2' }}>
-                    <Text>Confirmar senha</Text>
-                    {signUp.formState.errors.confirmPassword && (
-                      <Text weight={600} variant={'red'}>
-                        Senhas não coincidem
-                      </Text>
-                    )}
-                  </Flex>
-                  <Input type={'password'} {...signUp.register('confirmPassword')} />
-                </Box>
-                <Flex css={{ mt: '$6' }} justify={'end'}>
-                  <Button type={'submit'} css={{ width: '100%' }} loading={loading}>
-                    Cadastre-se
-                  </Button>
+              <Box css={{ mb: '$4' }}>
+                <Flex justify={'between'} css={{ mb: '$2' }}>
+                  <Text>Data de nascimento</Text>
+                  {signUp.formState.errors.birthdate && (
+                    <Text weight={600} variant={'red'}>
+                      Data inválida
+                    </Text>
+                  )}
                 </Flex>
+                <Controller
+                  name="birthdate"
+                  control={signUp.control}
+                  render={({ field }) => (
+                    <DatePicker
+                      placeholderText=""
+                      minDate={new Date(1920)}
+                      maxDate={new Date()}
+                      showYearDropdown
+                      scrollableYearDropdown
+                      onChange={field.onChange}
+                      yearDropdownItemNumber={100}
+                      selected={signUp.watch?.('birthdate')}
+                    />
+                  )}
+                />
               </Box>
-            </TabsContent>
-          </Tabs>
-        </ModalContent>
-      </Modal>
-    </Box>
+              <Box css={{ mb: '$4' }}>
+                <Flex justify={'between'} css={{ mb: '$2' }}>
+                  <Text>Email</Text>
+                  {signUp.formState.errors.email && (
+                    <Text weight={600} variant={'red'}>
+                      Email inválido
+                    </Text>
+                  )}
+                </Flex>
+                <Input {...signUp.register('email')} />
+              </Box>
+              <Box css={{ mb: '$4' }}>
+                <Flex justify={'between'} css={{ mb: '$2' }}>
+                  <Text>Senha</Text>
+                  {signUp.formState.errors.password && (
+                    <Text weight={600} variant={'red'}>
+                      Senha inválida
+                    </Text>
+                  )}
+                </Flex>
+                <Input type={'password'} {...signUp.register('password')} />
+              </Box>
+              <Box css={{ mb: '$4' }}>
+                <Flex justify={'between'} css={{ mb: '$2' }}>
+                  <Text>Confirmar senha</Text>
+                  {signUp.formState.errors.confirmPassword && (
+                    <Text weight={600} variant={'red'}>
+                      Senhas não coincidem
+                    </Text>
+                  )}
+                </Flex>
+                <Input type={'password'} {...signUp.register('confirmPassword')} />
+              </Box>
+              <Flex css={{ mt: '$6' }} justify={'end'}>
+                <Button type={'submit'} css={{ width: '100%' }} loading={loading}>
+                  Cadastre-se
+                </Button>
+              </Flex>
+            </Box>
+          </TabsContent>
+        </Tabs>
+      </ModalContent>
+    </Modal>
   );
 };

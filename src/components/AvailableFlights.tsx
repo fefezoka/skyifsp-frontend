@@ -53,7 +53,7 @@ export const AvailableFlights = ({ flights }: { flights: Flights }) => {
           ta: 'center',
           px: '$4',
           '@bp2': {
-            border: '2px solid $bg3',
+            border: '2px solid $bg2',
             borderTop: 0,
             maxWidth: 780,
           },
@@ -63,7 +63,7 @@ export const AvailableFlights = ({ flights }: { flights: Flights }) => {
           <Box
             key={routeIndex}
             css={{
-              ...(routeIndex === 1 && { borderTop: '2px solid $bg3' }),
+              ...(routeIndex === 1 && { borderTop: '2px solid $bg2' }),
               py: '$3',
             }}
           >

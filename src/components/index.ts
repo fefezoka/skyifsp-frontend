@@ -3,3 +3,4 @@ export { FlightsExamples } from './FlightsExamples';
 export { FlightItinerary } from './FlightItinerary';
 export { PopularFlights } from './PopularFlights';
 export { Login } from './Login';
+export { Header } from './Header';
